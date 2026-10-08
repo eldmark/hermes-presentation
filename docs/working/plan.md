@@ -27,17 +27,17 @@ Cada tarea toca solo su archivo `src/scenes/SNN*.tsx` y, si hace falta, su offse
 
 | Tarea | Necesita |
 |---|---|
-| [ ] S01 Puertas | T3.1, T3.2 |
-| [ ] S02 Cueva | T3.2, T3.3 |
-| [ ] S03 Zeus | T3.1 |
-| [ ] S04 Apolo | T3.2, T3.3, T3.4 |
-| [ ] S05 Calipso | T3.1, T3.2 |
-| [ ] S06 Circe | T3.2 |
-| [ ] S07 Almas | T3.1, T3.2 |
-| [ ] S08 Caminos | T3.1, T3.4 |
-| [ ] S09 Hoy | T3.1, T3.4 |
-| [ ] S10a Reglas | T3.1, T3.2 |
-| [ ] S10b Quiz, marcador y teclas | T3.5 |
+| [x] S01 Puertas | T3.1, T3.2 |
+| [x] S02 Cueva | T3.2, T3.3 |
+| [x] S03 Zeus | T3.1 |
+| [x] S04 Apolo | T3.2, T3.3, T3.4 |
+| [x] S05 Calipso | T3.1, T3.2 |
+| [x] S06 Circe | T3.2 |
+| [x] S07 Almas | T3.1, T3.2 |
+| [x] S08 Caminos | T3.1, T3.4 |
+| [x] S09 Hoy | T3.1, T3.4 |
+| [x] S10a Reglas | T3.1, T3.2 |
+| [x] S10b Quiz, marcador y teclas | T3.5 |
 
 Orden recomendado: S01 y S10b primero (inicio y actividad), luego el resto.
 

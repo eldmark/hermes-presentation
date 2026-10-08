@@ -1,0 +1,20 @@
+/* UI DOM de la escena 10. El host va dentro de .stage-root (z 7: sobre el overlay, bajo el HUD y la pantalla negra). */
+.act-host { position: fixed; inset: 0; z-index: 7; pointer-events: none; }
+.act-host .sb-btn { pointer-events: auto; }
+.act-host .act-btn { pointer-events: auto; }
+/* En el cierre el marcador queda en la mitad inferior para dejar libres las respuestas. */
+.act-host .sb-center { inset: 44vh 10vw 4vh; }
+.act-host .sb-center .sb-row { padding: .8vh 2vw; font-size: max(32px, 2.4vw); }
+.act-host .sb-center .sb-btn { padding: .8vh 2vw; }
+.act-tables { position: fixed; left: 0; right: 0; bottom: 8vh; display: flex; justify-content: center; align-items: center;
+  gap: 4vw; color: var(--qz-fg); font-family: system-ui, sans-serif; }
+.act-tables-n { font-size: max(160px, 18vw); font-weight: 800; line-height: 1; min-width: 1.4em; text-align: center;
+  font-variant-numeric: tabular-nums; text-shadow: 0 0 40px var(--qz-gold); }
+.act-btn { all: unset; box-sizing: border-box; cursor: pointer; width: max(96px, 9vw); height: max(96px, 9vw); border-radius: 50%;
+  display: grid; place-items: center; font-size: max(64px, 6vw); font-weight: 800; background: var(--qz-panel);
+  border: 3px solid var(--qz-line); color: var(--qz-fg); }
+.act-btn:disabled { opacity: .3; cursor: default; }
+.act-notice { position: fixed; left: 50%; top: 14px; transform: translateX(-50%); padding: 10px 22px; border-radius: 12px;
+  background: var(--qz-gold); color: #1a1400; font: 700 max(28px, 2vw) system-ui, sans-serif; }
+.act-reserve { position: fixed; top: 14px; left: 14px; padding: 6px 14px; border-radius: 10px; background: var(--qz-panel);
+  color: var(--qz-fg); font: 600 22px system-ui, sans-serif; }
