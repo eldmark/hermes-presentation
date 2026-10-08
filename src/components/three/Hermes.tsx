@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Character, Mat, type CharacterProps } from './Character'
+import { Model } from './Model'
 
 const GOLD = '#e8c24a'
 
@@ -90,10 +91,41 @@ function Caduceo() {
 
 export type HermesHolding = 'carta' | 'lira' | 'moly'
 
-export function Hermes({ holding, ghost, ...rest }: Omit<CharacterProps, 'kind' | 'children' | 'handItem'> & { holding?: HermesHolding }) {
-  const item: ReactNode = holding === 'carta' ? <Carta /> : holding === 'lira' ? <Lira /> : holding === 'moly' ? <Moly /> : null
+/**
+ * Objeto en la mano (hand_R) cuando carga hermes.glb. Con el brazo colgando, +Y local apunta hacia arriba:
+ * la lira se gira ≈1,7 rad sobre X para que sus cuerdas miren hacia delante y, en la pose `play` (brazo -0,7 y
+ * antebrazo -1,2), quede casi vertical y de frente al público. El moly se inclina hacia delante para no
+ * atravesar el antebrazo; la carta se sostiene a lo ancho, algo inclinada.
+ */
+function HandModel({ holding }: { holding: HermesHolding }) {
+  if (holding === 'carta') {
+    return (
+      <group rotation={[-0.4, 0, 0]}>
+        <Model name="carta" fallback={<Carta />} />
+      </group>
+    )
+  }
+  if (holding === 'lira') {
+    // lira.glb mide ~0,3 m de alto con la base en y≈0: escala 1,8 -> ~0,55 m.
+    return (
+      <group rotation={[1.7, 0, 0]}>
+        <Model name="lira" fallback={<Lira />} scale={1.8} />
+      </group>
+    )
+  }
+  // moly.glb: ~0,36 m de flor y tallo; escala 1,4 -> ~0,5 m, con el tallo agarrado un poco por debajo del origen.
   return (
-    <Character kind="hermes" ghost={ghost} handItem={item} {...rest}>
+    <group rotation={[1.0, 0, 0]} position={[0, -0.05, 0]}>
+      <Model name="moly" fallback={<Moly />} scale={1.4} />
+    </group>
+  )
+}
+
+export function Hermes({ holding, ghost, ...rest }: Omit<CharacterProps, 'kind' | 'children' | 'handItem' | 'fallbackChildren' | 'glbHandItem'> & { holding?: HermesHolding }) {
+  const item: ReactNode = holding === 'carta' ? <Carta /> : holding === 'lira' ? <Lira /> : holding === 'moly' ? <Moly /> : null
+  // hermes.glb ya trae petaso alado, sandalias aladas, capa y caduceo: esos adornos son solo del placeholder.
+  const decor = (
+    <>
       {/* petaso con alas */}
       <group position={[0, 1.8, 0]}>
         <mesh>
@@ -123,7 +155,10 @@ export function Hermes({ holding, ghost, ...rest }: Omit<CharacterProps, 'kind' 
         </group>
       ))}
       <Caduceo />
-    </Character>
+    </>
+  )
+  return (
+    <Character kind="hermes" ghost={ghost} handItem={item} glbHandItem={holding ? <HandModel holding={holding} /> : null} fallbackChildren={decor} {...rest} />
   )
 }
 export default Hermes

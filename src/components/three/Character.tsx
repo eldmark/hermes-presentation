@@ -3,9 +3,10 @@ import { useFrame } from '@react-three/fiber'
 import { damp3, dampAngle } from 'maath/easing'
 import type { Group } from 'three'
 import type { Vec3 } from '../../data/types'
-import { Model } from './Model'
+import { ASSETS } from './assets'
+import { Figure } from './Figure'
 
-export type CharacterKind = 'hermes' | 'apolo' | 'calipso' | 'odiseo' | 'humano' | 'alma'
+export type CharacterKind = 'hermes' | 'apolo' | 'calipso' | 'odiseo' | 'humano' | 'alma' | 'maia'
 export type CharacterAction = 'idle' | 'walk' | 'wave' | 'fly' | 'sleep' | 'point' | 'play'
 
 export interface CharacterProps {
@@ -20,6 +21,21 @@ export interface CharacterProps {
   children?: ReactNode
   /** Objeto en la mano derecha (el brazo derecho lo mueve). */
   handItem?: ReactNode
+  /** Como `children`, pero solo con el placeholder (lo que el glb ya trae incorporado). */
+  fallbackChildren?: ReactNode
+  /** Sustituye a `handItem` cuando el glb está cargado (se monta dentro de hand_R). */
+  glbHandItem?: ReactNode
+}
+
+/** kind -> clave de ASSETS con el glb articulado ('alma' usa el humano, translúcido). */
+const FIGURE_KEY: Record<CharacterKind, keyof typeof ASSETS> = {
+  hermes: 'hermes',
+  apolo: 'apolo',
+  calipso: 'calipso',
+  odiseo: 'odiseo',
+  maia: 'maia',
+  humano: 'humano',
+  alma: 'humano',
 }
 
 const KIND_COLOR: Record<CharacterKind, string> = {
@@ -28,6 +44,7 @@ const KIND_COLOR: Record<CharacterKind, string> = {
   calipso: '#2fa38a',
   odiseo: '#b5483a',
   humano: '#8a7a6a',
+  maia: '#8a5fb0',
   alma: '#bfe6ff',
 }
 const SKIN = '#e8b98f'
@@ -41,7 +58,7 @@ export function Mat({ color, ghost }: { color: string; ghost?: boolean }) {
 }
 
 export function Character({
-  kind, position, rotation = 0, action = 'idle', scale = 1, ghost, color, children, handItem,
+  kind, position, rotation = 0, action = 'idle', scale = 1, ghost, color, children, handItem, fallbackChildren, glbHandItem,
 }: CharacterProps) {
   const root = useRef<Group>(null)
   const body = useRef<Group>(null)
@@ -50,6 +67,7 @@ export function Character({
   const legL = useRef<Group>(null)
   const legR = useRef<Group>(null)
   const init = useRef(false)
+  const movingRef = useRef(false)
   const yaw = useRef({ v: rotation })
   const cloth = color ?? KIND_COLOR[kind]
   const isGhost = ghost ?? kind === 'alma'
@@ -67,6 +85,7 @@ export function Character({
     const dz = position[2] - g.position.z
     const dist = Math.hypot(dx, dz)
     const moving = dist > 0.05
+    movingRef.current = moving
     damp3(g.position, position, 0.35, dt)
     if (moving) {
       dampAngle(yaw.current, "v", Math.atan2(dx, dz), 0.2, dt)
@@ -97,6 +116,7 @@ export function Character({
     lR.rotation.x = swing
   })
 
+  const file: string | null = ASSETS[FIGURE_KEY[kind]]
   const mat = (c: string) => <Mat color={c} ghost={isGhost} />
   const placeholder = (
     <group>
@@ -134,6 +154,7 @@ export function Character({
             {mat('#5a4a3a')}
           </mesh>
         </group>
+        {fallbackChildren}
         {children}
       </group>
     </group>
@@ -141,7 +162,13 @@ export function Character({
 
   return (
     <group ref={root} position={position} scale={scale}>
-      <Model name={kind} fallback={placeholder} />
+      {file ? (
+        <Figure file={file} action={action} movingRef={movingRef} ghost={isGhost} handItem={glbHandItem ?? handItem} fallback={placeholder}>
+          {children}
+        </Figure>
+      ) : (
+        placeholder
+      )}
     </group>
   )
 }
