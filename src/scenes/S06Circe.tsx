@@ -1,4 +1,5 @@
 import { Character } from '../components/three/Character'
+import { Model } from '../components/three/Model'
 import { Hermes } from '../components/three/Hermes'
 import { useDamp } from '../components/three/useDamp'
 import type { SceneProps, Shot } from '../presentation/types'
@@ -12,15 +13,18 @@ export const shots: Shot[] = [
   { pos: [0, 7, 14], look: [0, 0, 0] },
 ]
 
-const TREES: [number, number, number][] = [
-  [-4, -1, 1.2], [-6, 3, 1.5], [-4.5, 7, 1], [-7, -4, 1.4], [-3.5, -7, 1.1], [-9, 1, 1.6],
-  [4, 0, 1.3], [6, 4, 1.5], [4.5, 8, 1], [7.5, -3, 1.4], [3.8, -7, 1.2], [9, 2, 1.6],
-  [-6.5, 10, 1.3], [6.5, 11, 1.2], [-2.8, 12, 1], [2.8, 13, 1.1],
+// [x, z, escala, giro, modelo]: olivos (~5 m) y cipreses (~8 m) mezclados, fuera del sendero (x=±0,8) y la casa.
+const TREES: [number, number, number, number, 'arbol' | 'cipres'][] = [
+  [-4, -1, 0.9, 0.3, 'arbol'], [-6, 3, 0.8, 2.0, 'cipres'], [-4.5, 7, 1, 4.1, 'arbol'], [-7, -4, 0.9, 1.1, 'cipres'],
+  [-3.5, -7, 0.85, 5.2, 'arbol'], [-9, 1, 1.1, 3.0, 'arbol'],
+  [4, 0, 1, 0.8, 'arbol'], [6, 4, 0.9, 2.7, 'cipres'], [4.5, 8, 1.1, 4.6, 'arbol'], [7.5, -3, 1, 1.9, 'arbol'],
+  [3.8, -7, 0.8, 3.6, 'cipres'], [9, 2, 1.2, 5.5, 'arbol'],
+  [-6.5, 10, 1, 0.6, 'cipres'], [6.5, 11, 0.9, 2.4, 'arbol'], [-2.8, 12, 0.8, 4.3, 'arbol'], [2.8, 13, 1, 1.5, 'cipres'],
 ]
 
-function Tree({ x, z, s }: { x: number; z: number; s: number }) {
-  return (
-    <group position={[x, 0, z]} scale={s}>
+function Tree({ x, z, s, yaw, kind }: { x: number; z: number; s: number; yaw: number; kind: 'arbol' | 'cipres' }) {
+  const placeholder = (
+    <>
       <mesh position={[0, 0.6, 0]}>
         <cylinderGeometry args={[0.15, 0.2, 1.2, 6]} />
         <meshStandardMaterial color="#5a3d26" flatShading />
@@ -33,6 +37,11 @@ function Tree({ x, z, s }: { x: number; z: number; s: number }) {
         <coneGeometry args={[0.6, 1.3, 7]} />
         <meshStandardMaterial color="#357a43" flatShading />
       </mesh>
+    </>
+  )
+  return (
+    <group position={[x, 0, z]} scale={s}>
+      <Model name={kind} fallback={<group scale={1.5}>{placeholder}</group>} scale={1} yaw={yaw} />
     </group>
   )
 }
@@ -88,10 +97,10 @@ function Pig({ position, scale }: { position: [number, number, number]; scale: n
   )
 }
 
-/** Flor de moly agrandada: flor blanca, tallo verde y raíz oscura. */
+/** Flor de moly agrandada: glb (planta de raíz negra y flor blanca) o placeholder. */
 function BigMoly({ scale }: { scale: number }) {
-  return (
-    <group position={[0.9, 1.0, 3.1]} scale={Math.max(scale, 0.0001) * 1.6}>
+  const placeholder = (
+    <group scale={1.6}>
       <mesh position={[0, 0.3, 0]}>
         <cylinderGeometry args={[0.02, 0.025, 0.6, 6]} />
         <meshStandardMaterial color="#2f7d3a" />
@@ -110,6 +119,11 @@ function BigMoly({ scale }: { scale: number }) {
         <coneGeometry args={[0.07, 0.25, 6]} />
         <meshStandardMaterial color="#1c120c" />
       </mesh>
+    </group>
+  )
+  return (
+    <group position={[0.9, 0.7, 3.1]} scale={Math.max(scale, 0.0001)}>
+      <Model name="moly" scale={2.6} fallback={placeholder} />
     </group>
   )
 }
@@ -167,7 +181,7 @@ export default function S06Circe({ beat }: SceneProps) {
       </group>
       <group scale={forest}>
         <House />
-        {TREES.map(([x, z, s]) => <Tree key={`${x}${z}`} x={x} z={z} s={s} />)}
+        {TREES.map(([x, z, s, yaw, kind]) => <Tree key={`${x}${z}`} x={x} z={z} s={s} yaw={yaw} kind={kind} />)}
       </group>
 
       {/* compañeros: humanos que se encogen mientras aparecen los cerdos */}
@@ -184,6 +198,13 @@ export default function S06Circe({ beat }: SceneProps) {
         position={[0, 0, odiseoZ]}
         rotation={beat === 2 ? Math.PI / 2 : Math.PI}
         handItem={beat >= 3 ? <SmallMoly /> : null}
+        glbHandItem={
+          beat >= 3 ? (
+            <group rotation={[1.0, 0, 0]} position={[0, -0.05, 0]}>
+              <Model name="moly" fallback={<SmallMoly />} scale={1.4} />
+            </group>
+          ) : null
+        }
       />
 
       {/* Hermes joven: sin protagonismo, algo menor, entrega la moly */}

@@ -1,13 +1,14 @@
 import type { Vec3 } from '../data/types'
 import { GlowLine } from '../components/three/GlowLine'
+import { Model } from '../components/three/Model'
 import { Hermes } from '../components/three/Hermes'
 import { useDamp } from '../components/three/useDamp'
 import type { SceneProps, Shot } from '../presentation/types'
 
 // Un shot por paso: mapa, orden, misión, ruta.
 export const shots: Shot[] = [
-  { pos: [-4, 3.5, 9], look: [-1, 1.2, 0] },
-  { pos: [-5, 3, 6], look: [-1, 1.4, -1] },
+  { pos: [-7, 4.5, 19], look: [-1, 7, -14] },
+  { pos: [-3, 3.2, 9], look: [-3, 5.5, -10] },
   { pos: [-1, 5.5, 5.5], look: [0.5, 0.2, 0] },
   { pos: [2.5, 6.5, 6], look: [3, 0, -1] },
 ]
@@ -23,6 +24,11 @@ const ROUTE: Vec3[] = [
   [1.4, 0.12, -0.2],
   [3.0, 0.12, -0.5],
   CALIPSO,
+]
+
+const COLUMNS: [number, number][] = [
+  [-26, -30], [-18, -30], [18, -30], [26, -30],
+  [-26, -12], [26, -12],
 ]
 
 const HERMES_POS: Vec3[] = [
@@ -50,7 +56,7 @@ function Isla({ position, scale = 1, color = LAND }: { position: Vec3; scale?: n
 function ZeusSombra({ intensity }: { intensity: number }) {
   // silueta oscura sobre un resplandor en la pared
   return (
-    <group position={[0, 0, -6.4]}>
+    <group position={[0, 0, -24]} scale={2.4}>
       <mesh position={[0, 4.2, 0]}>
         <planeGeometry args={[7, 8]} />
         <meshBasicMaterial color="#ffd98a" transparent opacity={0.1 + 0.3 * intensity} />
@@ -87,27 +93,39 @@ export default function S03Zeus({ beat }: SceneProps) {
 
   return (
     <group>
-      <ambientLight intensity={0.45} />
-      <directionalLight position={[-4, 8, 6]} intensity={0.8} color="#ffeccc" />
+      <ambientLight intensity={0.4} />
+      <directionalLight position={[-4, 12, 10]} intensity={0.7} color="#ffeccc" />
       <pointLight position={[0, 3, 0]} intensity={8 + 12 * calipsoLit} color="#7fd0ff" distance={14} />
 
-      {/* sala: suelo, pared, columnas */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
-        <planeGeometry args={[22, 16]} />
+      {/* sala monumental: suelo, pared de fondo, columnas */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, -10]}>
+        <planeGeometry args={[70, 50]} />
         <meshStandardMaterial color="#cfc6b4" />
       </mesh>
-      <mesh position={[0, 5, -6.5]}>
-        <planeGeometry args={[22, 10]} />
+      <mesh position={[0, 13, -34]}>
+        <planeGeometry args={[70, 26]} />
         <meshStandardMaterial color="#b8ad98" />
       </mesh>
-      {[-8, -4.5, 4.5, 8].map((x) => (
-        <mesh key={x} position={[x, 3.5, -6]}>
-          <cylinderGeometry args={[0.45, 0.5, 7, 8]} />
-          <meshStandardMaterial color="#efe8d8" />
-        </mesh>
+      {COLUMNS.map(([x, z]) => (
+        <group key={`${x}_${z}`} position={[x, 0, z]}>
+          <Model
+            name="olimpo_columna"
+            scale={4}
+            fallback={
+              <mesh position={[0, 12, 0]}>
+                <cylinderGeometry args={[1.3, 1.5, 24, 10]} />
+                <meshStandardMaterial color="#efe8d8" />
+              </mesh>
+            }
+          />
+        </group>
       ))}
 
-      <ZeusSombra intensity={zeus} />
+      {/* trono de Zeus al fondo, mirando hacia +z; se inclina y brilla cuando habla */}
+      <group position={[0, 0, -23]} rotation={[0.04 * zeus, 0, 0]}>
+        <Model name="zeus" fallback={<ZeusSombra intensity={zeus} />} />
+      </group>
+      <pointLight position={[0, 12, -17]} intensity={60 + 900 * zeus} color="#ffd98a" distance={60} />
 
       {/* mesa-mapa luminoso */}
       <mesh position={[0, -0.05, 0]}>
@@ -153,8 +171,8 @@ export default function S03Zeus({ beat }: SceneProps) {
       <GlowLine points={ROUTE} progress={1} color="#ffd34a" width={1} opacity={0.15} dashed />
 
       {/* luz que señala a Hermes en el paso 1 */}
-      <mesh position={[pos[0], 4, pos[2]]} scale={[spot + 0.001, 1, spot + 0.001]}>
-        <cylinderGeometry args={[0.5, 1.2, 8, 12, 1, true]} />
+      <mesh position={[pos[0], 10, pos[2]]} scale={[spot + 0.001, 1, spot + 0.001]}>
+        <cylinderGeometry args={[0.8, 1.6, 20, 12, 1, true]} />
         <meshBasicMaterial color="#fff2b0" transparent opacity={0.22 * spot} depthWrite={false} />
       </mesh>
 

@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Character } from '../components/three/Character'
 import { Hermes } from '../components/three/Hermes'
+import { Model } from '../components/three/Model'
 import { GlowLine } from '../components/three/GlowLine'
 import { useDamp } from '../components/three/useDamp'
 import type { Vec3 } from '../data/types'
@@ -12,8 +13,8 @@ import type { SceneProps, Shot } from '../presentation/types'
 export const shots: Shot[] = [
   { pos: [-18, 5, 14], look: [-12, 2.5, 6] },
   { pos: [-2, 9, 12], look: [1, 0.5, 1] },
-  { pos: [-3, 2, 4.5], look: [-3, 1, -2] },
-  { pos: [-1.5, 1.7, 2.2], look: [-3, 1.4, -1.5] },
+  { pos: [-2.6, 1.7, 0.2], look: [-3.2, 1.1, -3.6] },
+  { pos: [-1.2, 1.5, -0.5], look: [-3.2, 1.3, -3.6] },
   { pos: [-5, 2.2, 2.5], look: [5, 0.8, 3] },
   { pos: [1, 4, 10], look: [1, 0.5, 1.5] },
   { pos: [6, 7, 12], look: [10, 0, -4] },
@@ -23,10 +24,10 @@ export const shots: Shot[] = [
 
 const ISLA_Y = 0.4
 const HERMES: Vec3[] = [
-  [-14, 3, 8], [-6, 3.2, 4], [-2, ISLA_Y, -0.6], [-2, ISLA_Y, -0.6], [-2, ISLA_Y, -0.6],
+  [-14, 3, 8], [-6, 3.2, 4], [-2, ISLA_Y, -1.2], [-2, ISLA_Y, -1.2], [-2, ISLA_Y, -1.2],
   [-14, 4, 6], [-22, 5, 2], [0, 3, 6], [16, 4.5, 2],
 ]
-const CALIPSO_CUEVA: Vec3 = [-3.4, ISLA_Y, -2]
+const CALIPSO_CUEVA: Vec3 = [-3.2, ISLA_Y, -3.3]
 const CALIPSO_COSTA: Vec3 = [4.6, ISLA_Y, 2.8]
 const ODISEO_COSTA: Vec3 = [6.5, ISLA_Y, 3.6]
 
@@ -38,13 +39,15 @@ const RUTAS_ZEUS: Vec3[][] = [
 const RUTA_ITACA: Vec3[] = [
   [7.5, 0.1, 3.8], [11, 0.1, 8], [15, 0.1, 3], [13, 0.1, -3], [19, 0.1, -6], [17, 0.1, -11], [24, 0.1, -13],
 ]
-const ARBOLES: [number, number, number][] = [
-  [1, -3, 1.1], [3.5, -1, 1], [6, -2.5, 1.2], [0, 2.5, 0.9], [-1, 4, 1], [2.5, 4.5, 1.1], [-5.5, 2, 1], [5, -4.5, 1.3],
+// [x, z, escala, giro, modelo]. Se apartan de la cueva, de Odiseo y de la línea de la cámara del paso 4.
+const ARBOLES: [number, number, number, number, 'arbol' | 'cipres'][] = [
+  [1, -3, 0.7, 0.4, 'arbol'], [3.5, -1, 0.65, 2.1, 'arbol'], [6, -2.5, 0.75, 4.0, 'arbol'], [0, 5.3, 0.6, 1.2, 'arbol'],
+  [-2.5, 5.6, 0.6, 5.0, 'cipres'], [3, 6, 0.7, 3.3, 'arbol'], [-7, 0, 0.7, 2.6, 'arbol'], [5, -4.5, 0.6, 0.9, 'cipres'],
 ]
 
-function Arbol({ x, z, s }: { x: number; z: number; s: number }) {
-  return (
-    <group position={[x, ISLA_Y, z]} scale={s}>
+function Arbol({ x, z, s, yaw, kind }: { x: number; z: number; s: number; yaw: number; kind: 'arbol' | 'cipres' }) {
+  const placeholder = (
+    <group scale={s}>
       <mesh position={[0, 0.5, 0]}>
         <cylinderGeometry args={[0.12, 0.18, 1, 5]} />
         <meshStandardMaterial color="#6b4a2b" flatShading />
@@ -55,12 +58,20 @@ function Arbol({ x, z, s }: { x: number; z: number; s: number }) {
       </mesh>
     </group>
   )
+  return (
+    <group position={[x, ISLA_Y, z]}>
+      <Model name={kind} fallback={placeholder} scale={s} yaw={yaw} />
+    </group>
+  )
 }
+
+const CUEVA_POS: Vec3 = [-3, ISLA_Y, -3.5]
+const TELAR_POS: Vec3 = [-3.2, ISLA_Y, -4.6]
 
 function Cueva() {
   const roca = <meshStandardMaterial color="#6e6a63" flatShading roughness={1} />
-  return (
-    <group position={[-3, ISLA_Y, -2]}>
+  const cajas = (
+    <group position={[0, 0, 1.5]}>
       <mesh position={[-2.2, 1.5, 0]}><boxGeometry args={[1, 3, 4.4]} />{roca}</mesh>
       <mesh position={[2.2, 1.5, 0]}><boxGeometry args={[1, 3, 4.4]} />{roca}</mesh>
       <mesh position={[0, 3.2, 0]}><boxGeometry args={[5.4, 0.9, 4.6]} />{roca}</mesh>
@@ -71,6 +82,12 @@ function Cueva() {
       </mesh>
     </group>
   )
+  // cueva.glb: ~19 x 17 m, entrada hacia +Z; a 0,6 queda con interior ~7 x 6,6 m y ~2,2 m de alto.
+  return (
+    <group position={CUEVA_POS}>
+      <Model name="cueva" fallback={cajas} scale={0.6} />
+    </group>
+  )
 }
 
 function Telar({ weaving }: { weaving: boolean }) {
@@ -78,18 +95,24 @@ function Telar({ weaving }: { weaving: boolean }) {
   useFrame((s) => {
     const m = lanzadera.current
     if (!m) return
-    if (weaving) m.position.x = Math.sin(s.clock.elapsedTime * 3) * 0.45
+    if (weaving) m.position.x = Math.sin(s.clock.elapsedTime * 3) * 0.4
   })
   const madera = '#8b5a2b'
-  return (
-    <group position={[-4.7, ISLA_Y, -3]} rotation={[0, 0.4, 0]}>
+  const cajas = (
+    <group>
       {[-0.6, 0.6].map((x) => (
-        <mesh key={x} position={[x, 0.9, 0]}><boxGeometry args={[0.1, 1.8, 0.1]} /><meshStandardMaterial color={madera} /></mesh>
+        <mesh key={x} position={[x, 0.95, 0]}><boxGeometry args={[0.1, 1.9, 0.1]} /><meshStandardMaterial color={madera} /></mesh>
       ))}
-      <mesh position={[0, 1.75, 0]}><boxGeometry args={[1.35, 0.1, 0.1]} /><meshStandardMaterial color={madera} /></mesh>
-      <mesh position={[0, 0.2, 0]}><boxGeometry args={[1.35, 0.1, 0.1]} /><meshStandardMaterial color={madera} /></mesh>
+      <mesh position={[0, 1.8, 0]}><boxGeometry args={[1.3, 0.1, 0.1]} /><meshStandardMaterial color={madera} /></mesh>
+      <mesh position={[0, 0.2, 0]}><boxGeometry args={[1.3, 0.1, 0.1]} /><meshStandardMaterial color={madera} /></mesh>
       <mesh position={[0, 1, 0]}><boxGeometry args={[1.1, 1.4, 0.03]} /><meshStandardMaterial color="#d9b8e0" transparent opacity={0.6} /></mesh>
-      <mesh ref={lanzadera} position={[0, 1, 0.08]}><boxGeometry args={[0.3, 0.07, 0.07]} /><meshStandardMaterial color="#f2d27a" /></mesh>
+    </group>
+  )
+  return (
+    <group position={TELAR_POS}>
+      <Model name="telar" fallback={cajas} />
+      {/* lanzadera delante del telar (cara +Z) */}
+      <mesh ref={lanzadera} position={[0, 1, 0.3]}><boxGeometry args={[0.3, 0.07, 0.07]} /><meshStandardMaterial color="#f2d27a" /></mesh>
     </group>
   )
 }
@@ -132,7 +155,7 @@ export default function S05Calipso({ beat }: SceneProps) {
     <group>
       <ambientLight intensity={0.7} />
       <directionalLight position={[8, 12, 6]} intensity={1.2} />
-      <pointLight position={[-3, 2.6, -1.5]} color="#ffb35c" intensity={14 * luzCueva} distance={9} decay={2} />
+      <pointLight position={[-3, 1.8, -2.5]} color="#ffb35c" intensity={14 * luzCueva} distance={9} decay={2} />
 
       {/* Mar */}
       <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -152,7 +175,7 @@ export default function S05Calipso({ beat }: SceneProps) {
         <circleGeometry args={[1.6, 10]} />
         <meshStandardMaterial color="#e3d29a" />
       </mesh>
-      {ARBOLES.map(([x, z, s], i) => <Arbol key={i} x={x} z={z} s={s} />)}
+      {ARBOLES.map(([x, z, s, yaw, kind], i) => <Arbol key={i} x={x} z={z} s={s} yaw={yaw} kind={kind} />)}
       <Cueva />
       <Telar weaving={beat >= 1 && beat < 3} />
 
@@ -165,9 +188,9 @@ export default function S05Calipso({ beat }: SceneProps) {
 
       {/* Personajes */}
       <Hermes position={HERMES[b]} action={beat === 2 || beat === 3 || beat === 4 ? 'idle' : 'fly'}
-        rotation={beat >= 5 && beat <= 6 ? -Math.PI / 2 : beat === 8 ? Math.PI / 2 : 0.3}
+        rotation={beat >= 2 && beat <= 4 ? 2.6 : beat >= 5 && beat <= 6 ? -Math.PI / 2 : beat === 8 ? Math.PI / 2 : 0.3}
         holding={beat >= 1 && beat <= 4 ? 'carta' : undefined} />
-      <Character kind="calipso" position={calipso} rotation={beat >= 5 ? Math.PI / 2 : 0.6}
+      <Character kind="calipso" position={calipso} rotation={beat >= 5 ? Math.PI / 2 : beat >= 2 ? -2.7 : 0.6}
         action={beat === 5 ? 'walk' : 'idle'} />
       <Character kind="odiseo" position={odiseoPos} rotation={Math.PI / 2} action="idle" />
 

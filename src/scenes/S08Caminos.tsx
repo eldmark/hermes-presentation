@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import type { Vec3 } from '../data/types'
 import type { SceneProps, Shot } from '../presentation/types'
 import { Character } from '../components/three/Character'
+import { Model } from '../components/three/Model'
 import { Hermes } from '../components/three/Hermes'
 import { GlowLine } from '../components/three/GlowLine'
 import { InfoCard3D } from '../components/three/InfoCard3D'
@@ -30,8 +31,8 @@ const MARKET_X = 7
 const mix = (a: string, b: string, k: number) => '#' + new THREE.Color(a).lerp(new THREE.Color(b), k).getHexString()
 
 function Herma({ position }: { position: Vec3 }) {
-  return (
-    <group position={position}>
+  const placeholder = (
+    <>
       <mesh position={[0, 0.7, 0]}>
         <boxGeometry args={[0.4, 1.4, 0.4]} />
         <meshStandardMaterial color="#c9c3b6" flatShading />
@@ -48,6 +49,12 @@ function Herma({ position }: { position: Vec3 }) {
         <boxGeometry args={[0.1, 0.1, 0.06]} />
         <meshStandardMaterial color="#b7b0a0" />
       </mesh>
+    </>
+  )
+  // herma.glb mide 1,5 m y mira a +Z; escala 1,35 -> ~2 m para leerse desde la cámara.
+  return (
+    <group position={position}>
+      <Model name="herma" fallback={placeholder} scale={1.35} />
     </group>
   )
 }

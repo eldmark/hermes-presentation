@@ -219,7 +219,7 @@ export default function S07Almas({ beat }: SceneProps) {
       {SOUL_COLORS.map((c, i) => (
         <Character
           key={i}
-          kind={beat === 0 ? 'humano' : 'alma'}
+          kind="alma"
           color={beat === 0 ? '#6b6272' : c}
           ghost={beat !== 0}
           position={soulPos(i, b)}

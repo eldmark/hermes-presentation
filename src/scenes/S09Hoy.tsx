@@ -5,6 +5,7 @@ import { Hermes } from '../components/three/Hermes'
 import { GlowLine } from '../components/three/GlowLine'
 import { ConnectionNetwork, OLYMPUS_NETWORK } from '../components/three/ConnectionNetwork'
 import { InfoCard3D } from '../components/three/InfoCard3D'
+import { Model } from '../components/three/Model'
 import { useDamp } from '../components/three/useDamp'
 import type { Vec3 } from '../data/types'
 import type { SceneProps, Shot } from '../presentation/types'
@@ -124,6 +125,15 @@ export default function S09Hoy({ beat }: SceneProps) {
       <ambientLight intensity={0.6} />
       <directionalLight position={[6, 10, 8]} intensity={1.1} />
       <pointLight position={[0.5, 4, 3]} intensity={beat >= 6 ? 30 : 6} color="#ffd978" />
+
+      {/* nubes de fondo: cielo en los pasos 0 y 1 */}
+      {beat <= 1 && (
+        <group>
+          <group position={[-34, 9, -6]}><Model name="nube" fallback={null} scale={2.2} yaw={0.6} /></group>
+          <group position={[-22, 12, -10]}><Model name="nube" fallback={null} scale={2.8} yaw={2.2} /></group>
+          <group position={[-12, 8, -4]}><Model name="nube" fallback={null} scale={1.8} yaw={4} /></group>
+        </group>
+      )}
 
       {/* camino de siglos */}
       {pathFade > 0.01 && (
