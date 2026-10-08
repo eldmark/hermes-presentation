@@ -1,0 +1,61 @@
+:root {
+  --qz-bg: #f4f1ea; --qz-fg: #14131f; --qz-panel: #ffffffcc; --qz-line: #14131f33;
+  --qz-red: #d62839; --qz-blue: #1f5fd1; --qz-yellow: #f2b705; --qz-green: #1f9d55;
+  --qz-on-color: #ffffff; --qz-on-yellow: #1a1400; --qz-gold: #b07d00;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --qz-bg: #0b0b14; --qz-fg: #f5f3ff; --qz-panel: #1b1b2fd9; --qz-line: #ffffff33; --qz-gold: #ffd978;
+  }
+}
+:root[data-theme="dark"] {
+  --qz-bg: #0b0b14; --qz-fg: #f5f3ff; --qz-panel: #1b1b2fd9; --qz-line: #ffffff33; --qz-gold: #ffd978;
+}
+
+/* QuestionCard */
+.qc { position: fixed; inset: auto 3vw 4vh 3vw; display: flex; flex-direction: column; gap: 2vh; color: var(--qz-fg);
+  font-family: system-ui, sans-serif; pointer-events: none; }
+.qc-prompt { margin: 0; padding: 14px 24px; border-radius: 16px; background: var(--qz-panel); font-size: max(36px, 3.2vw);
+  line-height: 1.2; text-align: center; backdrop-filter: blur(6px); }
+.qc-voice { margin: 0; text-align: center; font-size: max(36px, 3vw); font-weight: 700; padding: 8px 20px; border-radius: 12px;
+  background: var(--qz-panel); align-self: center; animation: qc-pulse 2.4s ease-in-out infinite; }
+.qc-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5vh 1.5vw; }
+.qc-opt { position: relative; display: flex; align-items: center; gap: 18px; min-height: max(96px, 11vh); padding: 12px 24px;
+  border-radius: 14px; color: var(--qz-on-color); font-size: max(32px, 2.6vw); font-weight: 700; line-height: 1.15;
+  transition: opacity .4s, transform .4s, filter .4s; }
+.qc-c0 { background: var(--qz-red); } .qc-c1 { background: var(--qz-blue); }
+.qc-c2 { background: var(--qz-yellow); color: var(--qz-on-yellow); } .qc-c3 { background: var(--qz-green); }
+.qc-shape { flex: none; width: max(48px, 4vw); height: max(48px, 4vw); fill: currentColor; }
+.qc-opt.dim { opacity: .3; filter: saturate(.4); }
+.qc-opt.correct { transform: scale(1.03); outline: 6px solid var(--qz-fg); box-shadow: 0 0 40px var(--qz-gold); }
+.qc-check { margin-left: auto; font-size: max(48px, 4vw); }
+.qc-hidden .qc-opt { justify-content: center; min-height: max(80px, 9vh); }
+@keyframes qc-pulse { 50% { opacity: .7; } }
+
+/* Scoreboard */
+.sb { list-style: none; margin: 0; padding: 0; color: var(--qz-fg); font-family: system-ui, sans-serif; }
+.sb-row { border-radius: 12px; background: var(--qz-panel); border: 2px solid var(--qz-line); transition: background .3s, transform .3s; }
+.sb-btn { all: unset; box-sizing: border-box; width: 100%; display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; cursor: pointer; padding: inherit; border-radius: inherit; }
+.sb-btn:focus-visible { outline: 3px solid var(--qz-gold); }
+.sb-row:has(.sb-btn) { padding: 0; }
+.sb-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.sb-table { font-weight: 600; } .sb-score { font-weight: 800; font-variant-numeric: tabular-nums; }
+.sb-corner { position: fixed; top: 12px; right: 12px; display: grid; grid-template-columns: repeat(2, auto); gap: 6px; }
+.sb-corner .sb-row { padding: 6px 12px; font-size: 18px; }
+.sb-corner .sb-btn { padding: 6px 12px; }
+.sb-center { position: fixed; inset: 8vh 10vw; display: grid; grid-template-columns: repeat(auto-fit, minmax(32vw, 1fr));
+  align-content: center; gap: 1.5vh 2vw; }
+.sb-center .sb-row { padding: 1.2vh 2vw; font-size: max(32px, 3vw); }
+.sb-center .sb-btn { padding: 1.2vh 2vw; }
+.sb-center .sb-score { font-size: max(40px, 4vw); }
+.sb-row.leader { border-color: var(--qz-gold); box-shadow: 0 0 32px var(--qz-gold); transform: scale(1.04); }
+.sb-row.flash { animation: sb-flash .9s ease-out; }
+@keyframes sb-flash { 0% { background: var(--qz-gold); transform: scale(1.12); } 100% { background: var(--qz-panel); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .qc-voice, .sb-row.flash { animation: none; }
+  .sb-row.flash { background: var(--qz-gold); }
+  .qc-opt, .sb-row { transition: none; }
+  .qc-opt.correct, .sb-row.leader { transform: none; }
+}

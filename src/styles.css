@@ -1,0 +1,30 @@
+html,body,#root{margin:0;height:100%;background:#0b0b14}
+
+/* ---- Overlay (legible desde el fondo del salón) ---- */
+.overlay{position:fixed;inset:0;z-index:5;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:#fff;
+  text-shadow:0 2px 4px #000,0 0 14px rgba(0,0,0,.9),0 0 32px rgba(0,0,0,.7)}
+.ov-center{margin-top:auto;padding:0 5vw 7vh;text-align:center}
+.ov-caption,.ov-words{margin:0 auto;max-width:24em;font-size:clamp(32px,4.2vw,64px);line-height:1.25;font-weight:700;
+  padding:.35em .7em;border-radius:.4em;background:rgba(0,0,0,.45)}
+.ov-caption{animation:ov-rise .45s ease-out both}
+.ov-word{opacity:0;transform:translateY(.3em);transition:opacity .35s ease-out,transform .35s ease-out}
+.ov-word.on{opacity:1;transform:none}
+.ov-place{align-self:flex-start;margin:3vh 0 0 3vw;padding:.3em .8em;border-radius:.4em;background:rgba(0,0,0,.55);
+  font-size:clamp(32px,2.8vw,44px);font-weight:600;letter-spacing:.02em;animation:ov-slide .45s ease-out both}
+.ov-place .sep{opacity:.7}
+@keyframes ov-rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes ov-slide{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+
+/* ---- Flashback: sepia + viñeta ---- */
+.stage-root canvas{transition:filter 1s ease}
+.stage-root.flashback canvas{filter:sepia(.85) contrast(.95) brightness(.95)}
+.stage-root::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity 1s ease;
+  background:radial-gradient(ellipse at center,transparent 45%,rgba(30,15,0,.75) 100%)}
+.stage-root.flashback::after{opacity:1}
+
+@media (prefers-reduced-motion:reduce){
+  .ov-caption,.ov-place{animation:none}
+  .ov-word{transition:none;transform:none}
+  .stage-root canvas,.stage-root::after{transition:none}
+}
