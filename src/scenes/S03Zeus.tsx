@@ -8,11 +8,12 @@ import type { SceneProps, Shot } from '../presentation/types'
 // Un shot por paso: mapa, orden, misión, ruta.
 export const shots: Shot[] = [
   { pos: [-7, 4.5, 19], look: [-1, 7, -14] },
-  { pos: [-3, 3.2, 9], look: [-3, 5.5, -10] },
-  { pos: [-1, 5.5, 5.5], look: [0.5, 0.2, 0] },
-  { pos: [2.5, 6.5, 6], look: [3, 0, -1] },
+  { pos: [-5, 5, 14], look: [-4, 3.6, -10] },
+  { pos: [-2, 8, 12], look: [-1.5, 0.2, 0.5] },
+  { pos: [4, 10, 11], look: [5, 0, -1] },
 ]
 
+const TS = 1.7 // escala del mapa-mesa
 const SEA = '#0d2b4d'
 const LAND = '#2f6b4a'
 const CALIPSO: Vec3 = [4.2, 0.12, -0.9]
@@ -31,12 +32,12 @@ const COLUMNS: [number, number][] = [
   [-26, -12], [26, -12],
 ]
 
-const HERMES_POS: Vec3[] = [
+const HERMES_POS: Vec3[] = ([
   [-8, 0, 3.2],
-  [-5.4, 0, 2.6],
+  [-5.4, 0, -0.4],
   [-4.4, 0, 2.2],
   [4.2, 0, -2.2],
-]
+] as Vec3[]).map(([x, y, z]) => [x * TS, y, z * TS] as Vec3)
 
 function Isla({ position, scale = 1, color = LAND }: { position: Vec3; scale?: number; color?: string }) {
   return (
@@ -128,6 +129,7 @@ export default function S03Zeus({ beat }: SceneProps) {
       <pointLight position={[0, 12, -17]} intensity={60 + 900 * zeus} color="#ffd98a" distance={60} />
 
       {/* mesa-mapa luminoso */}
+      <group scale={[TS, TS, TS]}>
       <mesh position={[0, -0.05, 0]}>
         <boxGeometry args={[11, 0.2, 5.6]} />
         <meshStandardMaterial color="#5a3d22" />
@@ -169,6 +171,7 @@ export default function S03Zeus({ beat }: SceneProps) {
 
       <GlowLine points={ROUTE} progress={route} color="#ffd34a" width={4} />
       <GlowLine points={ROUTE} progress={1} color="#ffd34a" width={1} opacity={0.15} dashed />
+      </group>
 
       {/* luz que señala a Hermes en el paso 1 */}
       <mesh position={[pos[0], 10, pos[2]]} scale={[spot + 0.001, 1, spot + 0.001]}>

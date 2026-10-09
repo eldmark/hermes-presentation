@@ -5,7 +5,7 @@ import { useDamp } from '../components/three/useDamp'
 import type { SceneProps, Shot } from '../presentation/types'
 
 export const shots: Shot[] = [
-  { pos: [0, 2.8, 16], look: [0, 3, 0] },
+  { pos: [0, 3.5, 19.5], look: [0, -0.8, 0] },
   { pos: [0, 4.5, 15], look: [0, 6, -8] },
   { pos: [3, 2.2, 11], look: [-0.5, 1.8, 4] },
   { pos: [0, 3, 6], look: [1, 2.5, -6] },

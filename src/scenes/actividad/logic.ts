@@ -148,11 +148,11 @@ export function shotFor(id: string): S {
   const r = /^reglas-(\d)$/.exec(id)
   if (r) {
     const n = Number(r[1])
-    if (n === 2 || n === 3) return TOP([0, 0, 1.5], 9)
-    if (n === 5) return TOP([2, 0, 1], 9.5)
-    return TOP([0, 0, 0.5], 11)
+    if (n === 2 || n === 3) return TOP([-0.8, 0, 2], 12)
+    if (n === 5) return TOP([1.5, 0, 2], 12.5)
+    return TOP([0, 0, 2], 12.5)
   }
-  if (id === 'demo') return TOP([0, 0, 0.5], 12)
+  if (id === 'demo') return TOP([0, 0, 2], 13)
   if (id === 'mesas') return { pos: [0, 7, 10], look: [0, 0.5, 0] }
   if (id === 'cierre') return { pos: [0, 7.5, 7], look: [0, 2.5, -6] }
   const q = /^q(\d+)-(pregunta|cadena|respuesta)$/.exec(id)

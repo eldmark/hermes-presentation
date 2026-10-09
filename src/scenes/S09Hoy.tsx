@@ -21,19 +21,19 @@ const HERMES_POS: Vec3[] = [
 const NET_LIT = [0, 0, 0, 0, 0, 5, 10, 10]
 
 export const shots: Shot[] = [
-  { pos: [-30, 3, PATH_Z + 9], look: [-24, 1.5, PATH_Z] },
-  { pos: [-23, 3, PATH_Z + 7], look: [-23, 3, PATH_Z - 2] },
-  { pos: [-17, 3, PATH_Z + 7], look: [-17, 2.5, PATH_Z - 2] },
-  { pos: [-11, 3, PATH_Z + 7], look: [-11, 2.5, PATH_Z - 2] },
-  { pos: [0.5, 2.5, 13], look: [0.5, 0.8, 0] },
-  { pos: [1, 4, 14], look: [1, 0.8, 0] },
-  { pos: [1, 5, 17], look: [1, 0.8, -1] },
-  { pos: [0.5, 1.9, 4.5], look: [0.5, 1.5, 1.5] },
+  { pos: [-31, 3.5, PATH_Z + 11], look: [-26, 0.8, PATH_Z - 2] },
+  { pos: [ST.cielo + 0.8, 3.5, PATH_Z + 11], look: [ST.cielo + 0.8, 0.8, PATH_Z - 3] },
+  { pos: [ST.semana + 0.8, 3.5, PATH_Z + 11], look: [ST.semana + 0.8, 0.8, PATH_Z - 3] },
+  { pos: [ST.calle + 0.8, 3.5, PATH_Z + 11], look: [ST.calle + 0.8, 0.8, PATH_Z - 3] },
+  { pos: [0.5, 3, 14], look: [0.5, 1, 0] },
+  { pos: [1, 4, 15], look: [1, 0.8, 0] },
+  { pos: [1, 5, 18], look: [1, 0.8, -1] },
+  { pos: [0.5, 2.4, 8], look: [0.5, 1.7, 1.5] },
 ]
 
 function Planet({ on }: { on: number }) {
   return (
-    <group position={[ST.cielo, 3.5, PATH_Z - 3]} scale={Math.max(0.001, on)}>
+    <group position={[ST.cielo, 3, PATH_Z - 3]} scale={Math.max(0.001, on) * 1.3}>
       <mesh>
         <sphereGeometry args={[0.9, 20, 14]} />
         <meshStandardMaterial color="#b8a58c" roughness={0.9} />
@@ -48,7 +48,7 @@ function Planet({ on }: { on: number }) {
 
 function Calendar({ on }: { on: number }) {
   return (
-    <group position={[ST.semana, 2.8, PATH_Z - 3]} scale={Math.max(0.001, on)}>
+    <group position={[ST.semana, 2.4, PATH_Z - 3]} scale={Math.max(0.001, on) * 1.4}>
       <mesh><boxGeometry args={[1.8, 1.8, 0.08]} /><meshStandardMaterial color="#f4f1ea" /></mesh>
       <mesh position={[0, 0.7, 0.05]}><boxGeometry args={[1.8, 0.4, 0.04]} /><meshStandardMaterial color="#c2403a" /></mesh>
       {[0, 1, 2, 3, 4, 5, 6].map((d) => (
@@ -63,7 +63,7 @@ function Calendar({ on }: { on: number }) {
 
 function CaduceoSymbol({ on }: { on: number }) {
   return (
-    <group position={[ST.calle, 0, PATH_Z - 3]} scale={Math.max(0.001, on)}>
+    <group position={[ST.calle, 0, PATH_Z - 3]} scale={Math.max(0.001, on) * 1.2}>
       <mesh position={[0, 1.5, 0]}><cylinderGeometry args={[0.07, 0.07, 3, 8]} /><meshStandardMaterial color="#e8c24a" metalness={0.5} roughness={0.4} /></mesh>
       <mesh position={[0, 3.1, 0]}><sphereGeometry args={[0.16, 10, 8]} /><meshStandardMaterial color="#e8c24a" /></mesh>
       {[0, Math.PI].map((ph, i) => (
@@ -96,7 +96,7 @@ function Carta({ on }: { on: number }) {
     m.color.set(['#b3202a', '#e8c24a', '#3a7bd5', '#4a9a4a'][t])
   })
   return (
-    <group position={[0.5, 2.6, 2.6]} scale={Math.max(0.001, on)}>
+    <group position={[0.5, 3.4, 2.6]} scale={Math.max(0.001, on)}>
       <mesh><boxGeometry args={[1.6, 1.1, 0.04]} /><meshStandardMaterial color="#fffaf0" /></mesh>
       <mesh position={[0, 0, 0.04]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.2, 0.2, 0.03, 14]} />
@@ -152,12 +152,12 @@ export default function S09Hoy({ beat }: SceneProps) {
       <Planet on={cielo} />
       <Calendar on={semana} />
       <CaduceoSymbol on={calle} />
-      {cielo > 0.05 && <InfoCard3D position={[ST.cielo, 6.0, PATH_Z - 3]} title="Mercurio" subtitle="el cielo" highlighted={beat === 1 || beat >= 3} />}
+      {cielo > 0.05 && <InfoCard3D position={[ST.cielo, 5.3, PATH_Z - 3]} title="Mercurio" subtitle="el cielo" highlighted={beat === 1 || beat >= 3} />}
       {semana > 0.05 && <InfoCard3D position={[ST.semana, 4.8, PATH_Z - 3]} title="miércoles" subtitle="dies Mercurii" highlighted={beat === 2 || beat >= 3} />}
-      {calle > 0.05 && <InfoCard3D position={[ST.calle, 4.4, PATH_Z - 3]} title="caduceo" subtitle="la calle" highlighted={beat >= 3} />}
+      {calle > 0.05 && <InfoCard3D position={[ST.calle, 4.7, PATH_Z - 3]} title="caduceo" subtitle="la calle" highlighted={beat >= 3} />}
 
       {/* red del Olimpo (pareja de la portada) */}
-      <group scale={Math.max(0.001, netOn)}>
+      <group scale={Math.max(0.001, netOn) * 1.2}>
         {Object.entries(OLYMPUS_NETWORK.nodes).map(([id, p]) => (
           <mesh key={id} position={p}>
             <sphereGeometry args={[0.1, 8, 8]} />
