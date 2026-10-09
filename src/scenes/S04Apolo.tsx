@@ -21,19 +21,24 @@ export const shots: Shot[] = [
   { pos: [0.8, 1.9, 2.4], look: [2.6, 1.5, 0] },  // 1 acercamiento a las cuerdas
   { pos: [10, 1.0, -38], look: [-1, 1.2, -48] },  // 2 pastos, cámara baja
   { pos: [0, 42, -44], look: [0, 0, -56] },       // 3 cenital
-  { pos: [-8, 3, -48], look: [5, 0.8, -58] },     // 4 Apolo investiga
-  { pos: [2.5, 1.7, -76.5], look: [0, 0.5, -84] }, // 5 dentro de la boca de la cueva, cuna
-  { pos: [-34, 10, -48], look: [-34, 8.5, -84] },  // 6 sala de Zeus, trono enorme y los dos pequeños delante
-  { pos: [8, 3, -52], look: [0, 1, -62] },        // 7 devolución del ganado
-  { pos: [5, 2, -54], look: [-1, 1.3, -61] },     // 8 la lira
+  { pos: [-1, 2.4, -51], look: [6, 0.8, -60] },     // 4 Apolo investiga
+  { pos: [9.5, 3, -80.5], look: [12, 0.8, -87] }, // 5 dentro de la cueva, cuna y Maia
+  { pos: [-34, 2.4, -55], look: [-34, 4.5, -84] },  // 6 sala de Zeus, trono enorme y los dos pequeños delante
+  { pos: [3, 1.8, -51], look: [-0.5, 1, -60] },        // 7 devolución del ganado
+  { pos: [-1.5, 1.5, -65.5], look: [-0.5, 0.9, -60] },     // 8 la lira
   { pos: [-4, 2.7, 11], look: [1, 1.7, 0] },      // 9 regreso al patio
   { pos: [5, 3.4, 11], look: [0, 2.0, 0] },       // 10 pregunta
   { pos: [14, 3.5, 14], look: [20, 3, 5] },       // 11 salida
 ]
 
-const PATH: Vec3[] = [[3, 0.02, -46], [6, 0.02, -55], [2, 0.02, -64], [0, 0.02, -70]]
+const PATH: Vec3[] = [[3, 0.02, -46], [8, 0.02, -55], [11, 0.02, -62], [13, 0.02, -68]]
+// Cueva de Maia (escala 1,7 como en la escena 2): interior ~20 m, entrada hacia +z en z=-70.
+const CAVE: Vec3 = [14, 0, -84]
+const CAVE_SCALE = 1.7
+const cv = (x: number, y: number, z: number): Vec3 => [CAVE[0] + x, y, CAVE[2] + z]
+const SKY: string[] = ['#000000', '#000000', '#e89a6a', '#e89a6a', '#f0c0b8', '#2a2a4a', '#2a2a4a', '#f0b080', '#f4d890', '#000000', '#000000', '#000000']
 const COWS: Vec3[] = [[3, 0, -45], [6, 0, -47], [1, 0, -43], [8, 0, -44], [4, 0, -49]]
-const COW_DELTA: Vec3 = [-3, 0, -20]
+const COW_DELTA: Vec3 = [4, 0, -18]
 
 // luz por paso: [color, intensidad ambiente, intensidad direccional]
 const LIGHT: [string, number, number][] = [
@@ -82,7 +87,7 @@ function CowPlaceholder() {
 }
 
 // El modelo de Blender mira hacia +z y mide ~3,3 m de largo; el placeholder mira hacia -z y mide ~1,5 m.
-const COW_MODEL_SCALE = 0.5
+const COW_MODEL_SCALE = 0.75
 
 function Cow({ position, rot = 0 }: { position: Vec3; rot?: number }) {
   return (
@@ -115,7 +120,7 @@ function Tree({ position, i }: { position: Vec3; i: number }) {
   const cypress = i % 2 === 1
   return (
     <group position={position}>
-      <Model name={cypress ? 'cipres' : 'arbol'} scale={cypress ? 0.8 : 1} yaw={i * 2.1 + 0.7} fallback={<TreePlaceholder />} />
+      <Model name={cypress ? 'cipres' : 'arbol'} scale={cypress ? 1.2 : 1.5} yaw={i * 2.1 + 0.7} fallback={<TreePlaceholder />} />
     </group>
   )
 }
@@ -142,7 +147,7 @@ export default function S04Apolo({ beat }: SceneProps) {
     <group>
       <ambientLight intensity={amb} color={lightColor} />
       <directionalLight position={[8, 14, 6]} intensity={dir} color={lightColor} />
-      {beat >= 5 && beat <= 6 && <pointLight position={[0, 3, -80]} intensity={20} distance={14} color="#ffb060" />}
+      {beat === 5 && <pointLight position={cv(-1, 5, -1)} intensity={40} distance={24} color="#ffb060" />}
 
       {/* PATIO DEL OLIMPO */}
       <Model name="olimpo_templo" fallback={
@@ -159,6 +164,16 @@ export default function S04Apolo({ beat }: SceneProps) {
         <GlowLine key={x} points={[[2.5 + x, 1.1, 0.2], [1 + x * 6, 1.2, -12], [x * 10, 0.6, -30], [x * 8, 0.3, -44]]} progress={linesP} color="#ffd27a" width={2} opacity={0.9} />
       ))}
 
+      {/* cielo y suelo del recuerdo (solo en pasos de flashback) */}
+      {!present && (
+        <>
+          <mesh>
+            <sphereGeometry args={[500, 16, 10]} />
+            <meshBasicMaterial color={SKY[Math.min(beat, SKY.length - 1)]} side={1} fog={false} depthWrite={false} />
+          </mesh>
+          <mesh position={[0, -0.07, -60]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[220, 32]} /><meshStandardMaterial color="#6fa24a" /></mesh>
+        </>
+      )}
       {/* PASTOS DE APOLO */}
       <mesh position={[0, -0.06, -48]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[22, 24]} /><meshStandardMaterial color="#6fa24a" /></mesh>
       <mesh position={[-6, 0.5, -45]}><dodecahedronGeometry args={[1.3, 0]} /><meshStandardMaterial color="#8a8a86" flatShading /></mesh>
@@ -168,16 +183,16 @@ export default function S04Apolo({ beat }: SceneProps) {
 
       {/* CUEVA DE MAIA */}
       {/* cueva.glb: entrada hacia +z, interior ~12 x 11 m; la entrada queda hacia z=-75 */}
-      <group position={[0, 0, -84]}>
-        <Model name="cueva" fallback={
+      <group position={CAVE}>
+        <Model name="cueva" scale={CAVE_SCALE} fallback={
           <>
-            <mesh position={[0, -0.05, 0]}><boxGeometry args={[14, 0.1, 12]} /><meshStandardMaterial color="#6b5d4d" /></mesh>
-            <mesh position={[0, 3, -3]}><sphereGeometry args={[7, 10, 8, 0, Math.PI * 2, 0, Math.PI / 2]} /><meshStandardMaterial color="#5a4c40" flatShading side={2} /></mesh>
+            <mesh position={[0, -0.05, 0]}><boxGeometry args={[22, 0.1, 20]} /><meshStandardMaterial color="#6b5d4d" /></mesh>
+            <mesh position={[0, 3, -3]}><sphereGeometry args={[12, 10, 8, 0, Math.PI * 2, 0, Math.PI / 2]} /><meshStandardMaterial color="#5a4c40" flatShading side={2} /></mesh>
           </>
         } />
       </group>
-      <group position={[0, 0, -84]} rotation={[0, Math.PI / 2, 0]}>
-        <Model name="cuna" fallback={
+      <group position={cv(-4.2, 0, -4.2)} rotation={[0, 0.5, 0]}>
+        <Model name="cuna" scale={1.4} fallback={
           <>
             <mesh position={[0, 0.3, 0]}><boxGeometry args={[1.3, 0.3, 0.8]} /><meshStandardMaterial color="#8a5a2b" /></mesh>
             <mesh position={[0, 0.5, 0]}><boxGeometry args={[1.15, 0.12, 0.65]} /><meshStandardMaterial color="#f3ede0" /></mesh>
@@ -188,16 +203,16 @@ export default function S04Apolo({ beat }: SceneProps) {
         } />
       </group>
       {beat >= 5 && beat <= 7 && (
-        <group position={[1.4, 0.02, -82]} rotation={[-1.4, 0.4, 0]}>
+        <group position={cv(-3, 0.05, -2.6)} rotation={[-1.4, 0.4, 0]}>
           <Model name="lira" scale={1} fallback={<Lyre s={0.9} />} />
         </group>
       )}
 
       {/* SALA DE ZEUS: trono al fondo (-z), mira hacia +z */}
-      <mesh position={[-34, -0.05, -76]}><boxGeometry args={[30, 0.1, 32]} /><meshStandardMaterial color="#8c93a8" /></mesh>
-      {[[-47, -68], [-21, -68], [-47, -82], [-21, -82]].map(([x, z]) => (
+      <mesh position={[-34, -0.05, -76]}><boxGeometry args={[40, 0.1, 36]} /><meshStandardMaterial color="#8c93a8" /></mesh>
+      {[[-52, -66], [-16, -66], [-52, -82], [-16, -82]].map(([x, z]) => (
         <group key={`${x}${z}`} position={[x, 0, z]}>
-          <Model name="olimpo_columna" scale={1.5} fallback={<Column position={[0, 0, 0]} h={9} />} />
+          <Model name="olimpo_columna" scale={2.3} fallback={<Column position={[0, 0, 0]} h={14} />} />
         </group>
       ))}
       {/* halo detrás del trono: aparece en el paso 6 */}
@@ -231,16 +246,16 @@ export default function S04Apolo({ beat }: SceneProps) {
       {/* recuerdo */}
       {beat === 2 && <Character key="h-roca" kind="humano" color="#3b82c4" position={[-6, 1.6, -45]} rotation={0.5} scale={BABY} action="idle" />}
       {beat === 3 && <Character key="h-roca" kind="humano" color="#3b82c4" position={[-6, 1.6, -45]} rotation={-0.5} scale={BABY} action="idle" />}
-      {(beat === 4 || beat === 5) && <Character key="h-cuna" kind="humano" color="#3b82c4" position={[0, 0.32, -84]} rotation={Math.PI / 2} scale={BABY} action="sleep" />}
-      {(beat === 4 || beat === 5) && <Character key="maia" kind="maia" position={[2.6, 0, -85]} rotation={-Math.PI / 2 - 0.4} action="idle" />}
+      {(beat === 4 || beat === 5) && <Character key="h-cuna" kind="humano" color="#3b82c4" position={cv(-4.2, 0.55, -4.2)} rotation={0.5 + Math.PI / 2} scale={BABY} action="sleep" />}
+      {(beat === 4 || beat === 5) && <Character key="maia" kind="maia" position={cv(-2.6, 0, -3)} rotation={Math.atan2(-1.6, -1.2)} action="idle" />}
       {beat >= 4 && beat <= 5 && (
-        <Character key="apolo-a" kind="apolo" position={beat === 4 ? [5, 0, -58] : [-2.6, 0, -81]}
-          rotation={beat === 4 ? 2.6 : Math.PI * 0.8} action={beat === 4 ? 'point' : 'idle'} />
+        <Character key="apolo-a" kind="apolo" position={beat === 4 ? [5, 0, -58] : cv(-0.5, 0, -1.8)}
+          rotation={beat === 4 ? 2.6 : Math.atan2(-3.7, -2.4)} action={beat === 4 ? 'point' : 'idle'} />
       )}
       {beat === 6 && (
         <>
-          <Character key="apolo-h" kind="apolo" position={[-37, 0, -68]} rotation={0} action="point" />
-          <Character key="h-sala" kind="humano" color="#3b82c4" position={[-31, 0, -68]} rotation={0} scale={BABY} action="idle" />
+          <Character key="apolo-h" kind="apolo" position={[-37, 0, -66]} rotation={0} action="point" />
+          <Character key="h-sala" kind="humano" color="#3b82c4" position={[-31, 0, -66]} rotation={0} scale={BABY} action="idle" />
         </>
       )}
       {(beat === 7 || beat === 8) && (

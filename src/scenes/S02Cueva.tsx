@@ -10,18 +10,19 @@ import type { Vec3 } from '../data/types'
 import type { SceneProps, Shot } from '../presentation/types'
 
 export const shots: Shot[] = [
-  { pos: [4, 2.6, 17], look: [0, 1.3, 5] },
-  { pos: [3.6, 1.7, 2.6], look: [-2, 0.8, -2.2] },
-  { pos: [-3.2, 1.8, -0.4], look: [3, 0.3, 3.5] },
-  { pos: [-3, 3, 17], look: [5.5, 1, 11] },
+  { pos: [5, 3, 30], look: [1, 2, 10] },
+  { pos: [-4.5, 2, 3.5], look: [-2, 1, -3.2] },
+  { pos: [-4, 2, 8], look: [1.2, 0.5, 1.8] },
+  { pos: [2, 3, 33], look: [10, 1.2, 24] },
 ]
 
-const CRIB: Vec3 = [-2, 0, -2.2]
-const MAIA: Vec3 = [-1.2, 0, -1.2]
-const TURTLE: Vec3 = [2.6, 0, -1.8]
-const LYRE: Vec3 = [2.2, 0, -0.3]
-const PRINTS: Vec3[] = [[1.2, 0, 3], [2.5, 0, 5.5], [4.5, 0, 9], [6.5, 0, 13]]
-const BEAM: Vec3[] = [[1, 0.15, 3], [3, 0.15, 7.5], [6.5, 0.15, 13]]
+const CAVE_SCALE = 1.7
+const CRIB: Vec3 = [-4.2, 0, -4.2]
+const MAIA: Vec3 = [-2.6, 0, -3]
+const TURTLE: Vec3 = [4.5, 0, -2.5]
+const LYRE: Vec3 = [3.6, 0, -0.5]
+const PRINTS: Vec3[] = [[2, 0, 4], [4, 0, 8], [7, 0, 13], [10, 0, 19], [12.5, 0, 25]]
+const BEAM: Vec3[] = [[2, 0.15, 4], [6, 0.15, 12], [12, 0.15, 25]]
 const WARM = new THREE.Color('#ffb066')
 const MEMORY = new THREE.Color('#9fc4ff')
 
@@ -109,7 +110,7 @@ function Lyre() {
 function Crib() {
   return (
     <group position={CRIB} rotation={[0, 0.5, 0]}>
-      <Model name="cuna" fallback={<CribBoxes baby={false} />} />
+      <Model name="cuna" scale={1.4} fallback={<CribBoxes baby={false} />} />
     </group>
   )
 }
@@ -124,28 +125,37 @@ export default function S02Cueva({ beat }: SceneProps) {
   const lightColor = useMemo(() => WARM.clone().lerp(MEMORY, memory), [memory])
   const wallColor = useMemo(() => new THREE.Color('#5a4636').lerp(new THREE.Color('#3a4a66'), memory), [memory])
 
-  const herPos: Vec3 = beat === 0 ? [0.5, 0, 7] : beat === 1 ? [1.8, 0, 0.3] : beat === 2 ? [0.3, 0, 1.8] : [7, 0, 14]
-  const herRot = beat === 1 ? Math.atan2(CRIB[0] - 1.8, CRIB[2] - 0.3) : beat === 2 ? Math.atan2(1.5, 2) : 0.6
-  const babyPos: Vec3 = [-0.4, 0, -0.9]
+  const herPos: Vec3 = beat === 0 ? [1.5, 0, 16] : beat === 1 ? [-0.5, 0, -1.8] : beat === 2 ? [0.3, 0, 2.2] : [12.5, 0, 25]
+  const herRot = beat === 1 ? Math.atan2(CRIB[0] + 0.5, CRIB[2] + 1.8) : beat === 2 ? Math.atan2(3, 3) : 0.45
+  const babyPos: Vec3 = [-3.3, 0.35, -3.5]
   const maiaRot = Math.atan2(CRIB[0] - MAIA[0], CRIB[2] - MAIA[2])
 
   return (
     <group>
       <ambientLight intensity={0.35 + memory * 0.1} color={lightColor} />
-      <directionalLight position={[3, 8, 6]} intensity={0.5} color={lightColor} />
-      <pointLight position={[-1, 3, 0]} intensity={18} distance={12} color={lightColor} />
+      <directionalLight position={[3, 12, 20]} intensity={0.6} color={lightColor} />
+      <pointLight position={[-1, 5, 0]} intensity={40} distance={22} color={lightColor} />
 
       {/* cueva: entrada hacia +Z; el fallback es el domo hueco de antes */}
+      <mesh>
+        <sphereGeometry args={[400, 16, 10]} />
+        <meshBasicMaterial color="#a9c4dc" side={THREE.BackSide} fog={false} depthWrite={false} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.06, 20]}>
+        <circleGeometry args={[300, 32]} />
+        <meshStandardMaterial color="#8a9a62" />
+      </mesh>
       <Model
         name="cueva"
+        scale={CAVE_SCALE}
         fallback={
           <group>
             <mesh position={[0, 0, -1]} scale={[1, 0.7, 1]}>
-              <sphereGeometry args={[10, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
+              <sphereGeometry args={[17, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
               <meshStandardMaterial color={wallColor} side={THREE.BackSide} flatShading />
             </mesh>
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 3]}>
-              <circleGeometry args={[14, 20]} />
+              <circleGeometry args={[24, 20]} />
               <meshStandardMaterial color="#7a6347" />
             </mesh>
           </group>
@@ -156,7 +166,7 @@ export default function S02Cueva({ beat }: SceneProps) {
       <Character kind="maia" position={MAIA} rotation={maiaRot} action="idle" />
 
       <group position={TURTLE} rotation={[0, -0.6, 0]}>
-        <Model name="tortuga" fallback={<Turtle />} />
+        <Model name="tortuga" scale={1.4} fallback={<Turtle />} />
       </group>
       <group position={LYRE} scale={Math.max(0.001, lyre)} visible={lyre > 0.01}>
         <Model name="lira" fallback={<group scale={0.5}><Lyre /></group>} scale={1} />
@@ -170,7 +180,7 @@ export default function S02Cueva({ beat }: SceneProps) {
 
       <Footprints path={PRINTS} count={8} visible={prints} />
       <GlowLine points={BEAM} progress={beam} color="#ffe9a8" width={4} />
-      <pointLight position={[6.5, 2, 13]} intensity={20 * beam} distance={10} color="#ffe9a8" />
+      <pointLight position={[12, 3, 25]} intensity={20 * beam} distance={10} color="#ffe9a8" />
     </group>
   )
 }
