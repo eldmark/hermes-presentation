@@ -159,7 +159,7 @@ export default function S02Cueva({ beat }: SceneProps) {
         <Model name="tortuga" fallback={<Turtle />} />
       </group>
       <group position={LYRE} scale={Math.max(0.001, lyre)} visible={lyre > 0.01}>
-        <Model name="lira" fallback={<group scale={0.5}><Lyre /></group>} scale={1.8} />
+        <Model name="lira" fallback={<group scale={0.5}><Lyre /></group>} scale={1} />
       </group>
 
       <group visible={babyS > 0.01}>

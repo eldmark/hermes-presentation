@@ -109,7 +109,7 @@ function HandModel({ holding }: { holding: HermesHolding }) {
     // lira.glb mide ~0,3 m de alto con la base en y≈0: escala 1,8 -> ~0,55 m.
     return (
       <group rotation={[1.7, 0, 0]}>
-        <Model name="lira" fallback={<Lira />} scale={1.8} />
+        <Model name="lira" fallback={<Lira />} scale={1} />
       </group>
     )
   }

@@ -18,7 +18,7 @@ html,body,#root{margin:0;height:100%;background:#0b0b14}
 
 /* ---- Flashback: sepia + viñeta ---- */
 .stage-root canvas{transition:filter 1s ease}
-.stage-root.flashback canvas{filter:sepia(.85) contrast(.95) brightness(.95)}
+.stage-root.flashback canvas{filter:sepia(.7) contrast(1.08) brightness(.78) saturate(1.15)}
 .stage-root::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity 1s ease;
   background:radial-gradient(ellipse at center,transparent 45%,rgba(30,15,0,.75) 100%)}
 .stage-root.flashback::after{opacity:1}

@@ -58,7 +58,7 @@ function Lyre({ position = [0, 0, 0], rotation = [0, 0, 0] as Vec3, s = 1 }: { p
 function HandLyre() {
   return (
     <group rotation={[1.7, 0, 0]}>
-      <Model name="lira" scale={1.8} fallback={<Lyre s={0.8} />} />
+      <Model name="lira" scale={1} fallback={<Lyre s={0.8} />} />
     </group>
   )
 }
@@ -189,7 +189,7 @@ export default function S04Apolo({ beat }: SceneProps) {
       </group>
       {beat >= 5 && beat <= 7 && (
         <group position={[1.4, 0.02, -82]} rotation={[-1.4, 0.4, 0]}>
-          <Model name="lira" scale={1.8} fallback={<Lyre s={0.9} />} />
+          <Model name="lira" scale={1} fallback={<Lyre s={0.9} />} />
         </group>
       )}
 
