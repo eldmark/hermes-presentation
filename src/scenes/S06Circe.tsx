@@ -1,3 +1,4 @@
+import * as THREE from 'three'
 import { Character } from '../components/three/Character'
 import { Model } from '../components/three/Model'
 import { Hermes } from '../components/three/Hermes'
@@ -6,20 +7,19 @@ import type { SceneProps, Shot } from '../presentation/types'
 
 // Un shot por paso: recuerdo, cerdos, advertencia, umbral, salto.
 export const shots: Shot[] = [
-  { pos: [0, 6, 16], look: [0, 1, 0] },
-  { pos: [5, 3.5, 9], look: [0, 1, -3] },
-  { pos: [1.4, 1.7, 5.2], look: [0.9, 1.3, 3] },
-  { pos: [0, 2.2, 6], look: [0, 1.2, -3] },
-  { pos: [0, 7, 14], look: [0, 0, 0] },
+  { pos: [0, 5.5, 18], look: [0, 1.4, -2] },
+  { pos: [4, 2.8, 10.5], look: [0, 1, -2] },
+  { pos: [0.8, 2.1, 8.5], look: [0.9, 1.2, 0] },
+  { pos: [2.5, 2.8, 7], look: [0, 1.2, -4] },
+  { pos: [0, 4, 9], look: [0, 1, -2.5] },
 ]
 
 // [x, z, escala, giro, modelo]: olivos (~5 m) y cipreses (~8 m) mezclados, fuera del sendero (x=±0,8) y la casa.
 const TREES: [number, number, number, number, 'arbol' | 'cipres'][] = [
-  [-4, -1, 0.9, 0.3, 'arbol'], [-6, 3, 0.8, 2.0, 'cipres'], [-4.5, 7, 1, 4.1, 'arbol'], [-7, -4, 0.9, 1.1, 'cipres'],
+  [-4, -1, 0.9, 0.3, 'arbol'], [-6, 3, 0.8, 2.0, 'cipres'], [-7, -4, 0.9, 1.1, 'cipres'],
   [-3.5, -7, 0.85, 5.2, 'arbol'], [-9, 1, 1.1, 3.0, 'arbol'],
-  [4, 0, 1, 0.8, 'arbol'], [6, 4, 0.9, 2.7, 'cipres'], [4.5, 8, 1.1, 4.6, 'arbol'], [7.5, -3, 1, 1.9, 'arbol'],
+  [4, 0, 1, 0.8, 'arbol'], [6, 4, 0.9, 2.7, 'cipres'], [7.5, -3, 1, 1.9, 'arbol'],
   [3.8, -7, 0.8, 3.6, 'cipres'], [9, 2, 1.2, 5.5, 'arbol'],
-  [-6.5, 10, 1, 0.6, 'cipres'], [6.5, 11, 0.9, 2.4, 'arbol'], [-2.8, 12, 0.8, 4.3, 'arbol'], [2.8, 13, 1, 1.5, 'cipres'],
 ]
 
 function Tree({ x, z, s, yaw, kind }: { x: number; z: number; s: number; yaw: number; kind: 'arbol' | 'cipres' }) {
@@ -40,7 +40,7 @@ function Tree({ x, z, s, yaw, kind }: { x: number; z: number; s: number; yaw: nu
     </>
   )
   return (
-    <group position={[x, 0, z]} scale={s}>
+    <group position={[x, 0, z]} scale={s * 0.75}>
       <Model name={kind} fallback={<group scale={1.5}>{placeholder}</group>} scale={1} yaw={yaw} />
     </group>
   )
@@ -123,7 +123,7 @@ function BigMoly({ scale }: { scale: number }) {
   )
   return (
     <group position={[0.9, 0.7, 3.1]} scale={Math.max(scale, 0.0001)}>
-      <Model name="moly" scale={2.6} fallback={placeholder} />
+      <Model name="moly" scale={1.8} fallback={placeholder} />
     </group>
   )
 }
@@ -163,6 +163,11 @@ export default function S06Circe({ beat }: SceneProps) {
       <directionalLight position={[5, 8, 6]} intensity={flash ? 1.0 : 1.3} color={flash ? '#ffc480' : '#ffffff'} />
       <pointLight position={[0, 3, -4]} intensity={beat >= 1 && beat <= 3 ? 8 : 0} color="#ffb347" distance={9} />
 
+      {/* cielo local */}
+      <mesh>
+        <sphereGeometry args={[70, 16, 10]} />
+        <meshBasicMaterial color={flash ? '#8a8f86' : '#9cc0e0'} side={THREE.BackSide} />
+      </mesh>
       {/* mar (paso 4) y suelo del bosque */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.03, 0]}>
         <circleGeometry args={[30, 24]} />

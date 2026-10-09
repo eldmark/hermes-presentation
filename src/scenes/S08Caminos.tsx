@@ -12,14 +12,14 @@ import { useDamp } from '../components/three/useDamp'
 
 // Un paso por cada beat de scenes.ts (8): camino-griego, herma, mercado, ruta-mercado, roma, estatua, cierre, pregunta.
 export const shots: Shot[] = [
-  { pos: [-6.5, 2.6, 6], look: [-3.5, 1, 0] },
-  { pos: [-2.2, 1.9, 2.6], look: [-3.2, 1.3, -1] },
-  { pos: [6, 3, 6.5], look: [7, 0.8, -1] },
+  { pos: [-5.5, 2.9, 9.5], look: [-3.5, 1.1, 0] },
+  { pos: [-4, 2.3, 5.6], look: [-3.9, 1.5, -1.3] },
+  { pos: [7, 3.2, 9.5], look: [7, 1, -1] },
   { pos: [8.5, 5.5, 7.5], look: [10, 0, -5] },
-  { pos: [12.5, 2.8, 6.5], look: [15, 1.5, 0] },
-  { pos: [16.2, 1.7, 3.6], look: [17, 1.1, 1] },
+  { pos: [13.5, 2.8, 8.5], look: [15, 1.5, 0] },
+  { pos: [16.6, 2.4, 7.5], look: [16.8, 1.5, 1] },
   { pos: [9, 24, 14], look: [9, 0, -7] },
-  { pos: [14, 4.5, 10], look: [21, 1, 0] },
+  { pos: [14.5, 4, 11], look: [18.5, 1.2, 0] },
 ]
 
 const ROAD = '#b08a5a'
@@ -78,7 +78,7 @@ function Gate({ position, color }: { position: Vec3; color: string }) {
 
 function Stall({ position, color, goods }: { position: Vec3; color: string; goods: string }) {
   return (
-    <group position={position}>
+    <group position={position} scale={1.4}>
       <mesh position={[0, 0.4, 0]}>
         <boxGeometry args={[1.4, 0.8, 0.8]} />
         <meshStandardMaterial color="#7a5636" flatShading />
@@ -216,7 +216,7 @@ export default function S08Caminos({ beat }: SceneProps) {
   const kRoads = useDamp(beat >= 6 ? 1 : 0, 1.2)
 
   // Hermes camina por el camino según el paso.
-  const hx = [-4.6, -3.9, 5.2, 8.6, 13.2, 16, 12.5, 14][Math.min(beat, 7)]
+  const hx = [-4.6, -5.1, 5.2, 8.6, 13.2, 16, 12.5, 14][Math.min(beat, 7)]
   const hz = beat === 3 ? -0.2 : beat === 5 ? 1.4 : 0.9
   const heading = beat === 5 ? -0.9 : Math.PI / 2
   const hAction = beat === 1 || beat === 3 || beat === 5 || beat === 6 ? 'idle' : 'walk'
@@ -239,6 +239,15 @@ export default function S08Caminos({ beat }: SceneProps) {
       <directionalLight position={[8, 14, 8]} intensity={1.6} />
       <pointLight position={[-3, 3, 2]} intensity={3} distance={9} color="#ffe2b0" />
 
+      {/* cielo y terreno lejano */}
+      <mesh position={[10, 0, -5]}>
+        <sphereGeometry args={[90, 16, 10]} />
+        <meshBasicMaterial color="#9cc4e4" side={THREE.BackSide} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[10, -0.12, -5]}>
+        <circleGeometry args={[85, 24]} />
+        <meshStandardMaterial color="#7f8a55" />
+      </mesh>
       {/* suelo y camino de tierra */}
       <mesh position={[6, -0.05, -2]}>
         <boxGeometry args={[34, 0.1, 22]} />
@@ -290,27 +299,27 @@ export default function S08Caminos({ beat }: SceneProps) {
       <Arch position={[18.5, 0, -1.6]} k={kRome} color={buildCol} />
       {/* columnas romanas */}
       {[14, 15, 16].map((x) => (
-        <mesh key={x} position={[x + 3, 0.9 * kRome, 2.6]} scale={[1, Math.max(kRome, 0.001), 1]}>
+        <mesh key={x} position={[x + 7, 0.9 * kRome, 2.6]} scale={[1, Math.max(kRome, 0.001), 1]}>
           <cylinderGeometry args={[0.18, 0.2, 1.8, 7]} />
           <meshStandardMaterial color="#f3efe4" flatShading />
         </mesh>
       ))}
 
       {/* estatuilla de Mercurio con bolsa */}
-      <Mercury position={[17.2, 0, 1.2]} scale={kStatue} />
+      <Mercury position={[17.2, 0, 1.2]} scale={kStatue * 1.6} />
       {kBag > 0.02 && (
-        <group position={[17.2, 0, 1.2]} scale={1 + 0.15 * kBag}>
+        <group position={[17.2, 0, 1.2]} scale={1.6 + 0.15 * kBag}>
           <pointLight color={GOLD} intensity={4 * kBag} distance={3} position={[-0.2, 0.8, 0.5]} />
         </group>
       )}
-      {beat === 5 && <InfoCard3D title="Bolsa" subtitle="comercio" position={[16.4, 2.2, 1.2]} highlighted />}
+      {beat === 5 && <group position={[17.4, 3.5, 1.2]} scale={0.7}><InfoCard3D title="Bolsa" subtitle="comercio" position={[0, 0, 0]} highlighted /></group>}
 
       {/* cartas de la herma */}
       {kCards > 0.02 && (
         <group scale={kCards}>
-          <InfoCard3D title="Puerta" position={[HERMA_X - 1.8, 2.5, -1.3]} highlighted={touched} />
-          <InfoCard3D title="Cruce" position={[HERMA_X, 3.2, -1.3]} highlighted={touched} />
-          <InfoCard3D title="Límite" position={[HERMA_X + 1.8, 2.5, -1.3]} highlighted={touched} />
+          <group position={[HERMA_X - 1.6, 2.4, -1.3]} scale={0.7}><InfoCard3D title="Puerta" position={[0, 0, 0]} highlighted={touched} /></group>
+          <group position={[HERMA_X, 3.2, -1.3]} scale={0.7}><InfoCard3D title="Cruce" position={[0, 0, 0]} highlighted={touched} /></group>
+          <group position={[HERMA_X + 1.6, 2.4, -1.3]} scale={0.7}><InfoCard3D title="Límite" position={[0, 0, 0]} highlighted={touched} /></group>
         </group>
       )}
 
