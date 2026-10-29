@@ -27,3 +27,16 @@ export function mixHex(a: string, b: string, t: number): string {
   const hex = (n: number) => n.toString(16).padStart(2, '0')
   return `#${hex(m(ar!, br!))}${hex(m(ag!, bg!))}${hex(m(ab!, bb!))}`
 }
+
+/** Cielo propio de algunos pasos (por id de escena y de paso); si no hay, vale el de la escena. */
+export const BEAT_SKY: Partial<Record<SceneId, Record<string, string>>> = {
+  apolo: {
+    robo: '#e89a6a', 'robo-huellas': '#e89a6a', investigacion: '#f0c0b8',
+    'cuna-finge': '#2a2a4a', 'ante-zeus': '#2a2a4a', devolucion: '#f0b080', 'lira-acuerdo': '#f4d890',
+  },
+  almas: { itaca: '#6f84a8', 'almas-siguen': '#3a4666' },
+}
+
+export function skyFor(id: SceneId, beatId: string): string {
+  return BEAT_SKY[id]?.[beatId] ?? ATMOSPHERE[id].sky
+}

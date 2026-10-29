@@ -5,7 +5,7 @@ import type { PerspectiveCamera } from 'three'
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import { SCENES } from '../data/scenes'
 import { Hud, plannedSeconds } from '../components/ui/Hud'
-import { ATMOSPHERE } from './atmosphere'
+import { ATMOSPHERE, skyFor } from './atmosphere'
 import { CameraRig } from './CameraRig'
 import { Stage } from './Stage'
 import { formatHash, navigate, parseHash } from './navigation'
@@ -38,11 +38,13 @@ function ProjectorFit() {
 }
 
 /** Cielo y niebla por escena, con transición suave al cambiar de escena. */
-function SceneAtmosphere({ sceneIndex }: { sceneIndex: number }) {
+function SceneAtmosphere({ sceneIndex, beatIndex }: { sceneIndex: number; beatIndex: number }) {
   const scene = useThree((s) => s.scene)
-  const target = ATMOSPHERE[SCENES[sceneIndex]!.id]
-  const tc = useRef(new Color(target.sky))
-  tc.current.set(target.sky)
+  const data = SCENES[sceneIndex]!
+  const target = ATMOSPHERE[data.id]
+  const sky = skyFor(data.id, data.beats[beatIndex]!.id)
+  const tc = useRef(new Color(sky))
+  tc.current.set(sky)
   useEffect(() => {
     scene.background = new Color(target.sky)
     scene.fog = new Fog(target.sky, target.near, target.far)
@@ -130,7 +132,7 @@ export default function Presentation() {
         <ProjectorFit />
         {/* Si el equipo va justo de fps, baja la resolución de render sola; si recupera, la sube. */}
         <PerformanceMonitor flipflops={3} onDecline={() => setDpr(1)} onFallback={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
-        <SceneAtmosphere sceneIndex={nav.scene} />
+        <SceneAtmosphere sceneIndex={nav.scene} beatIndex={nav.beat} />
         {/* Luz de base suave: cada escena añade la suya. */}
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 20, 10]} intensity={0.85} />
