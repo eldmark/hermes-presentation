@@ -55,3 +55,8 @@ OUT=/tmp/recorrido tools/walk.sh "1/0" 40           # recorrido con → desde el
 ```
 
 Necesitan `bun run dev` corriendo en http://127.0.0.1:5175/ (`BASE=` para otra dirección) y el paquete `playwright` (ruta en `PLAYWRIGHT_DIR`). Solo corre un Chromium a la vez.
+
+
+## GitHub Pages sin Actions
+
+Se puede publicar sin GitHub Actions: `tools/publicar-pages.sh` compila con `BASE=/<repo>/` y sube `dist/` a la rama `gh-pages`. Una sola vez, en el repositorio: Settings → Pages → Source «Deploy from a branch», rama `gh-pages`, carpeta `/ (root)`. La ruta con `#` funciona en Pages porque no necesita reescrituras del servidor. Ojo: el sitio es público aunque el repositorio no lo sea, y el modelo pesa unos 5 MB.

@@ -45,28 +45,79 @@ def front_y(z):
     return -0.1
 
 
+def fuse(P, voxel, smooth=2):
+    """Une todas las piezas de piel de la parte en una sola superficie orgánica (remallado por vóxeles + suavizado)."""
+    skin = [o for o in P if o.data.materials and o.data.materials[0].name == SKIN.name]
+    if len(skin) < 2:
+        return
+    P[:] = [o for o in P if all(o is not k for k in skin)]
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in skin:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = skin[0]
+    bpy.ops.object.join()
+    o = bpy.context.active_object
+    md = o.modifiers.new("rm", "REMESH")
+    md.mode = "VOXEL"
+    md.voxel_size = voxel
+    md.use_smooth_shade = True
+    bpy.ops.object.modifier_apply(modifier="rm")
+    md = o.modifiers.new("sm", "SMOOTH")
+    md.factor = 0.55
+    md.iterations = smooth
+    bpy.ops.object.modifier_apply(modifier="sm")
+    o.select_set(False)
+    P.insert(0, o)
+
+
+def skirt(P, mat_, z0, z1, rx0, ry0, rx1, ry1, t0=0.0, t1=1.0, folds=9, amp=.05, thick=.007, name="falda"):
+    """Falda con pliegues verticales y dobladillo ondulado. t0..t1 recorta una franja (para el ribete)."""
+    rows, seg = 14, 84
+    bm = bmesh.new()
+    vs = []
+    for i in range(rows):
+        t = t0 + (t1 - t0) * i / (rows - 1)
+        row = []
+        for k in range(seg):
+            a = 2 * math.pi * k / seg
+            f = 1 + amp * (t ** 0.8) * math.sin(folds * a + .9 * math.sin(2 * a))
+            z = z0 + (z1 - z0) * t - .035 * (t ** 3) * (.5 + .5 * math.sin(folds * a + 1.2))
+            rx = (rx0 + (rx1 - rx0) * t) * f
+            ry = (ry0 + (ry1 - ry0) * t) * f
+            row.append(bm.verts.new((rx * math.sin(a), -ry * math.cos(a), z)))
+        vs.append(row)
+    for i in range(rows - 1):
+        for k in range(seg):
+            bm.faces.new((vs[i][k], vs[i][(k + 1) % seg], vs[i + 1][(k + 1) % seg], vs[i + 1][k]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    o = bpy.data.objects.new(name, me)
+    col.objects.link(o)
+    o.data.materials.append(mat_)
+    for poly in me.polygons:
+        poly.use_smooth = True
+    bpy.context.view_layer.update()
+    md = o.modifiers.new("solid", "SOLIDIFY")
+    md.thickness = thick
+    md.offset = 1
+    bpy.context.view_layer.objects.active = o
+    o.select_set(True)
+    bpy.ops.object.modifier_apply(modifier="solid")
+    o.select_set(False)
+    P.append(o)
+    return o
+
+
 # ======================================================================
 # PELVIS: cadera, túnica azul, falda de tiras (pteruges), cinturón
 # ======================================================================
 def pelvis_b(P):
     loft(col, P, [V(0, 0, z) for z in (.84, .94, 1.04)], [(.152, .102), (.168, .110), (.154, .102)], SKIN, sub=1, name="cadera")
-    zs = [1.04, .96, .86, .76, .68]
-    loft(col, P, [V(0, 0, z) for z in zs], list(zip([.172, .190, .212, .230, .238], [.118, .130, .148, .164, .172])), BLUE, seg=36,
-         cap=(True, False), name="tunica")
-    N = 22
-    for k in range(N):
-        a = 2 * math.pi * (k + 0.5) / N
-        rx, ry = .198, .150
-        x, y = rx * math.sin(a), -ry * math.cos(a)
-        rad = V(x / rx ** 2, y / ry ** 2, 0).normalized()
-        ln = .26 + .018 * math.sin(k * 2.1)
-        p0 = V(x, y, .995)
-        p1 = p0 + rad * .012 + V(0, 0, -ln * .5)
-        p2 = p0 + rad * .034 + V(0, 0, -ln)
-        p3 = p2 + rad * .006 + V(0, 0, -.012)
-        loft(col, P, [p0, p1, p2, p3], [(.0300, .0045), (.0290, .0045), (.0235, .0045), (.0120, .0040)], CREAM, seg=10, ref=rad, name="tira")
-        loft(col, P, [p2 + V(0, 0, .014), p2, p3], [(.0238, .0050), (.0230, .0050), (.0120, .0045)], GOLD, seg=10, ref=rad, name="remate")
-        prim(col, P, "sphere", tuple(p0 + rad * .004 + V(0, 0, -.012)), (.0055, .0055, .0055), GOLD, seg=8, rings=6)
+    skirt(P, BLUE, 1.02, .66, .182, .130, .252, .186, name="tunica")
+    skirt(P, CREAM, 1.02, .66, .182, .130, .252, .186, t0=.90, t1=1.0, thick=.010, name="ribete")
+    skirt(P, GOLD, 1.02, .66, .182, .130, .252, .186, t0=.985, t1=1.0, thick=.012, name="orla")
     prim(col, P, "cyl", (0, 0, 1.032), (.190, .140, .048), GOLD, v=48)
     prim(col, P, "cyl", (0, -.142, 1.032), (.034, .034, .012), GOLD, rot=(math.pi / 2, 0, 0), v=24)
     prim(col, P, "cyl", (0, -.1495, 1.032), (.022, .022, .008), BLUE, rot=(math.pi / 2, 0, 0), v=24)
@@ -92,9 +143,10 @@ def torso_b(P):
         z = 1.505 - 0.485 * t
         x = .150 - .335 * t
         pts.append(V(x, front_y(z) - .005, z))
-        rad.append((.0215, .0055))
+        rad.append((.0165, .0045))
     loft(col, P, pts, rad, LEATHER, seg=8, ref=(0, -1, 0), name="banda")
     prim(col, P, "sphere", (.150, front_y(1.505) - .008, 1.505), (.017, .007, .017), GOLD, seg=14, rings=8)  # hebilla
+    fuse(P, .0055, 3)
     # bolsa en la cadera izquierda
     bx, by, bz = -.232, .070, 1.0
     prim(col, P, "cube", (bx, by, bz), (.052, .100, .112), LEATHER, smooth=False)
@@ -147,7 +199,8 @@ def head_b(P):
     # cabello rizado
     cx, cy, cz = 0.0, .006, 1.712
     ax, ay, az = .097, .106, .104
-    for i in range(110):
+    fuse(P, .0042, 3)
+    for i in range(130):
         th = random.uniform(0, 2 * math.pi)
         ph = math.acos(random.uniform(0.18, 0.94))   # 0 = coronilla
         x = cx + ax * math.sin(ph) * math.cos(th)
@@ -155,25 +208,26 @@ def head_b(P):
         z = cz + az * math.cos(ph)
         if y < -.03 and z < 1.745:      # despeja la frente y la cara
             continue
-        if z < 1.64:
+        if z < 1.62 or z > 1.752:       # el petaso cubre la parte alta
             continue
-        r = random.uniform(.020, .031)
+        r = random.uniform(.020, .030)
         prim(col, P, "ico", (x * 1.04, y * 1.04, z * 1.0 + .004), (r, r, r * .95), HAIR, sub=1)
-    for i in range(6):                    # flequillo
-        x = -.050 + i * .020 + random.uniform(-.004, .004)
-        r_ = random.uniform(.017, .025)
-        prim(col, P, "ico", (x, -.086 + abs(i - 2.5) * .005, 1.772 - abs(i - 2.5) * .004 + random.uniform(-.004, .004)), (r_, r_, r_ * .92), HAIR, sub=1)
-    for sx in (-1, 1):                    # patillas
+    for sx in (-1, 1):                    # patillas y rizos sobre las orejas
         prim(col, P, "ico", (sx * .088, -.012, 1.690), (.012, .020, .030), HAIR, sub=1)
-    # petaso: ala, copa, cinta y plumas
-    loft(col, P, [V(0, .002, 1.789), V(0, .002, 1.797)], [(.188, .197), (.188, .197)], HAT, seg=48, sub=0, name="ala_sombrero")
-    prim(col, P, "torus", (0, .002, 1.793), (.1915, .2005, .1915), HAT, minor=0.030, seg=56)
-    loft(col, P, [V(0, .004, z) for z in (1.794, 1.832, 1.866, 1.894)], [(.108, .116), (.102, .109), (.084, .091), (.038, .042)], HAT, seg=32, sub=1, name="copa")
-    prim(col, P, "torus", (0, .004, 1.806), (.1075, .1150, .1075), GOLD, minor=0.07, seg=48)
+        for dz, dy in ((.0, -.02), (.03, .0), (.055, -.015)):
+            prim(col, P, "ico", (sx * .098, dy, 1.700 + dz), (.016, .020, .018), HAIR, sub=1)
+    # petaso: casquete ajustado con reborde fino y alas grandes que barren hacia atrás
+    loft(col, P, [V(0, .004, z) for z in (1.742, 1.772, 1.815, 1.862, 1.898, 1.916)],
+         [(.101, .109), (.105, .113), (.100, .108), (.082, .090), (.050, .056), (.016, .018)], HAT, seg=40, sub=1, name="copa")
+    prim(col, P, "torus", (0, .004, 1.746), (.1035, .1115, .1035), HAT, minor=0.040, seg=56)
+    prim(col, P, "torus", (0, .004, 1.762), (.1050, .1130, .1050), GOLD, minor=0.030, seg=48)
+    blob(col, P, (0, -.103, 1.790), (.020, .008, .024), GOLD, seg=16, rings=10)            # emblema frontal
     for sx in (-1, 1):
-        for i, (dx, dy, dz, ln, w) in enumerate(((.85, .10, .50, .150, .030), (.60, .12, .78, .185, .034), (.32, .14, .92, .170, .031))):
-            feather(col, P, (sx * .110, .004 + i * .004, 1.844 - i * .004), (sx * dx, dy, dz), ln, w, .034, (0, 1, 0), WING, thick=.0034, name="pluma")
-        prim(col, P, "sphere", (sx * .1115, .006, 1.844), (.0075, .0075, .0075), GOLD, seg=10, rings=8)
+        blob(col, P, (sx * .1005, .016, 1.808), (.017, .020, .017), GOLD, seg=14, rings=10)    # cubo del ala
+        wings = ((.22, .22, .90, .34, .038), (.40, .30, .80, .32, .038), (.58, .36, .66, .29, .036),
+                 (.76, .40, .46, .25, .033), (.88, .42, .26, .20, .029))
+        for i, (dx, dy, dz, ln, w) in enumerate(wings):
+            feather(col, P, (sx * .100, .016 + i * .002, 1.808 - i * .005), (sx * dx, dy, dz), ln, w, .13 - i * .012, (0, 1, 0), WING, thick=.0045, n=10, name="pluma")
     bpy.context.view_layer.update()
 
 
@@ -187,6 +241,7 @@ def arm_b(sx):
         tube(col, P, s, e, [(0, .050, .049), (.15, .056, .056), (.35, .054, .055), (.70, .046, .047), (1, .040, .041)], SKIN, sub=1, name="brazo")
         a, b = s.lerp(e, .50), s.lerp(e, .67)
         tube(col, P, a, b, [(0, .056, .056), (.5, .060, .060), (1, .056, .056)], GOLD, sub=1, name="brazalete")
+        fuse(P, .0065)
     return f
 
 
@@ -223,9 +278,9 @@ def hand_fist(P, sx, C=V(X_HA + .010, -.020, 0)):
 
 
 def caduceo(P, C=V(X_HA + .010, -.020, 0)):
-    top = 2.10
-    path_tube(col, P, [V(C.x, C.y, z) for z in (.30, .80, 1.30, 1.80, top)], .0125, .0105, STAFF, seg=14, ref=(0, -1, 0), name="vara")
-    for z in (1.50, 1.545):
+    top = 1.80
+    path_tube(col, P, [V(C.x, C.y, z) for z in (.30, .70, 1.10, 1.50, top)], .0125, .0105, STAFF, seg=14, ref=(0, -1, 0), name="vara")
+    for z in (1.20, 1.245):
         prim(col, P, "torus", (C.x, C.y, z), (.0200, .0200, .0200), GOLD, minor=0.20, seg=24)
     prim(col, P, "sphere", (C.x, C.y, top + .020), (.0230, .0230, .0230), GOLD, seg=16, rings=12)
     for s in (0.0, math.pi):
@@ -234,7 +289,7 @@ def caduceo(P, C=V(X_HA + .010, -.020, 0)):
             t = i / 47
             ang = s + 4 * math.pi * t
             r_ = .0245 + .002 * math.sin(6 * t)
-            pts.append(V(C.x + r_ * math.cos(ang), C.y + r_ * math.sin(ang), 1.56 + .50 * t))
+            pts.append(V(C.x + r_ * math.cos(ang), C.y + r_ * math.sin(ang), 1.26 + .50 * t))
         path_tube(col, P, pts, .0090, .0070, GOLD, seg=10, ref=(0, 0, 1), name="serpiente", taper=lambda t: .0086 - .0020 * t)
         e = pts[-1]
         blob(col, P, (e.x, e.y, e.z + .004), (.0100, .0140, .0090), GOLD, seg=12, rings=8)
@@ -249,6 +304,11 @@ def forearm_b(sx, side):
         e, wr = V(sx * X_EL, 0, 1.19), V(sx * X_WR, 0, .936)
         blob(col, P, (sx * X_EL, 0, 1.19), (.043, .043, .043), SKIN, seg=16, rings=12)
         tube(col, P, e, wr, [(0, .040, .041), (.12, .045, .047), (.30, .046, .048), (.70, .034, .034), (1, .027, .025)], SKIN, sub=1, name="antebrazo")
+        if side == "L":
+            hand_fist(P, sx)
+        else:
+            hand_open(P, sx)
+        fuse(P, .0042, 2)
         a, b = e.lerp(wr, .40), e.lerp(wr, .90)
         tube(col, P, a, b, [(0, .0475, .0495), (.5, .0390, .0405), (1, .0295, .0285)], LEATHER, sub=0, name="muñequera")
         for t in (.40, .62, .90):
@@ -256,10 +316,7 @@ def forearm_b(sx, side):
             r_ = {.40: .0505, .62: .0405, .90: .0310}[t]
             prim(col, P, "torus", (c.x, c.y, c.z), (r_, r_, r_), GOLD, minor=0.07, seg=24)
         if side == "L":
-            hand_fist(P, sx)
             caduceo(P)
-        else:
-            hand_open(P, sx)
         bpy.context.view_layer.update()
     return f
 
@@ -271,6 +328,7 @@ def leg_b(sx):
     def f(P):
         tube(col, P, V(sx * .10, 0, .96), V(sx * .10, 0, .52),
              [(0, .090, .092), (.10, .098, .100), (.30, .095, .098), (.62, .078, .082), (.88, .060, .064), (1, .056, .060)], SKIN, sub=1, name="muslo")
+        fuse(P, .0065)
     return f
 
 
@@ -286,6 +344,7 @@ def shin_b(sx):
         loft(col, P, [V(x, y, z) for y, z in yz], rr, SKIN, seg=18, ref=(0, 0, 1), sub=1, name="pie")
         for i, (off, sz) in enumerate(((.030, .0115), (.015, .0095), (0.0, .0085), (-.013, .0075), (-.025, .0065))):
             blob(col, P, (x - sx * off, -.1785 - i * .0008, .0125), (sz, sz * 1.25, sz * .95), SKIN, seg=10, rings=8)
+        fuse(P, .0045, 2)
         # sandalia
         loft(col, P, [V(x, y, .0065) for y in (.066, .010, -.060, -.120, -.192)], [(.034, .007), (.042, .007), (.048, .007), (.051, .007), (.044, .007)],
              LEATHER, seg=16, ref=(0, 0, 1), name="suela")
@@ -301,7 +360,7 @@ def shin_b(sx):
                 feather(col, P, (x + s_ * .044, .030 + i * .004, .112 + i * .010), (s_ * dxx, dyy, dzz), ln, w, -.012, (s_, 0, 0), WING, thick=.0028, name="ala_tobillo")
         # greba dorada y adornos
         tube(col, P, V(x, 0, .500), V(x, 0, .132),
-             [(0, .0625, .067), (.10, .0655, .072), (.40, .0670, .078, 0, .012), (.70, .0545, .060, 0, .006), (.92, .0425, .046), (1, .0405, .043)], GOLD, sub=1, name="greba")
+             [(0, .0585, .063), (.10, .0610, .067), (.40, .0620, .072, 0, .010), (.70, .0500, .054, 0, .005), (.92, .0390, .042), (1, .0372, .040)], GOLD, sub=1, name="greba")
         path_tube(col, P, [V(x, -.067, .492), V(x, -.073, .40), V(x, -.062, .28), V(x, -.050, .16)], .0050, .0040, GOLD, seg=8, ref=(1, 0, 0), name="cresta")
         prim(col, P, "torus", (x, -.072, .532), (.030, .030, .030), GOLD, minor=0.26, seg=28, rot=(math.pi / 2, 0, 0))
         prim(col, P, "sphere", (x, -.0775, .532), (.0085, .0050, .0085), GOLD, seg=10, rings=8)
