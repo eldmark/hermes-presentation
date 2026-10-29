@@ -43,7 +43,7 @@ const RUTA_ITACA: Vec3[] = [
 const ARBOLES: [number, number, number, number, 'arbol' | 'cipres'][] = [
   [5, -8, 1.0, 0.4, 'arbol'], [8, -3, 0.95, 2.1, 'arbol'], [11, -7, 1.05, 4.0, 'arbol'], [2, 9, 0.9, 1.2, 'arbol'],
   [-4, 10, 0.9, 5.0, 'cipres'], [6, 11, 1.0, 3.3, 'arbol'], [-11, 4, 1.0, 2.6, 'arbol'], [9, -11, 0.9, 0.9, 'cipres'],
-  [-9, 9, 0.95, 1.7, 'arbol'], [-2, -13, 0.95, 3.9, 'cipres'],
+  [-9, 9, 0.95, 1.7, 'arbol'], [13, -1, 0.95, 3.9, 'cipres'],
 ]
 
 function Arbol({ x, z, s, yaw, kind }: { x: number; z: number; s: number; yaw: number; kind: 'arbol' | 'cipres' }) {

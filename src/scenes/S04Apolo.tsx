@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Color } from 'three'
+import { AdditiveBlending, Color } from 'three'
 import type { Vec3 } from '../data/types'
 import { Character } from '../components/three/Character'
 import { Hermes } from '../components/three/Hermes'
@@ -171,7 +171,7 @@ export default function S04Apolo({ beat }: SceneProps) {
             <sphereGeometry args={[500, 16, 10]} />
             <meshBasicMaterial color={SKY[Math.min(beat, SKY.length - 1)]} side={1} fog={false} depthWrite={false} />
           </mesh>
-          <mesh position={[0, -0.07, -60]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[220, 32]} /><meshStandardMaterial color="#6fa24a" /></mesh>
+          <mesh position={[0, -0.07, -60]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[420, 48]} /><meshStandardMaterial color="#6fa24a" /></mesh>
         </>
       )}
       {/* PASTOS DE APOLO */}
@@ -215,11 +215,13 @@ export default function S04Apolo({ beat }: SceneProps) {
           <Model name="olimpo_columna" scale={2.3} fallback={<Column position={[0, 0, 0]} h={14} />} />
         </group>
       ))}
-      {/* halo detrás del trono: aparece en el paso 6 */}
-      <mesh position={[-34, 11, -92]} scale={[0.4 + 0.6 * shadow, 0.4 + 0.6 * shadow, 1]}>
-        <circleGeometry args={[15, 32]} />
-        <meshBasicMaterial color="#ffe9a8" transparent opacity={0.35 * shadow} depthWrite={false} />
-      </mesh>
+      {/* resplandor detrás de la cabeza de Zeus: tres discos suaves, aparece en el paso 6 */}
+      {[[6.5, 0.07], [4.6, 0.1], [3.2, 0.14]].map(([rad, op]) => (
+        <mesh key={rad} position={[-34, 11, -86]} scale={0.5 + 0.5 * shadow}>
+          <circleGeometry args={[rad, 32]} />
+          <meshBasicMaterial color="#ffe9a8" transparent opacity={op * shadow} depthWrite={false} blending={AdditiveBlending} />
+        </mesh>
+      ))}
       <group position={[-34, 0, -84]} scale={0.94 + 0.06 * shadow}>
         <Model name="zeus" fallback={
           <>

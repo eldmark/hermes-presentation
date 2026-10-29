@@ -127,7 +127,7 @@ export default function S12Referencias({ beat }: SceneProps) {
 
       {/* suelo de nubes y camino */}
       <mesh position={[0, -0.05, 4]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[28, 24]} />
+        <circleGeometry args={[200, 48]} />
         <meshStandardMaterial color="#f6e9d6" />
       </mesh>
       <mesh position={[0, 0.01, 8]} rotation={[-Math.PI / 2, 0, 0]}>

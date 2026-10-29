@@ -27,6 +27,18 @@ const BEAM: Vec3[] = [[2, 0.15, 4], [6, 0.15, 12], [12, 0.15, 25]]
 const WARM = new THREE.Color('#ffb066')
 const MEMORY = new THREE.Color('#9fc4ff')
 
+/** Mapa de alfa radial: el suelo se funde con el cielo antes de llegar al borde del disco (radio 600 m). */
+function groundFade() {
+  const c = document.createElement('canvas')
+  c.width = c.height = 256
+  const g = c.getContext('2d')!
+  const gr = g.createRadialGradient(128, 128, 0, 128, 128, 128)
+  gr.addColorStop(0, '#fff'); gr.addColorStop(0.04, '#fff'); gr.addColorStop(0.1, '#aaa'); gr.addColorStop(0.2, '#444'); gr.addColorStop(0.32, '#000'); gr.addColorStop(1, '#000')
+  g.fillStyle = gr
+  g.fillRect(0, 0, 256, 256)
+  return new THREE.CanvasTexture(c)
+}
+
 function CribBoxes({ baby }: { baby: boolean }) {
   return (
     <group>
@@ -121,6 +133,8 @@ export default function S02Cueva({ beat }: SceneProps) {
   const lyre = useDamp(beat >= 3 ? 1 : 0)
   const prints = useDamp(beat >= 3 ? 1 : 0, 1.2)
   const beam = useDamp(beat >= 4 ? 1 : 0, 1)
+  const fade = useMemo(() => groundFade(), [])
+  const outside = useDamp(beat === 0 || beat === 4 ? 1 : 0, 0.6)
   const babyOn = beat === 2
   const babyS = useDamp(babyOn ? 1 : 0, 0.5)
   const lightColor = useMemo(() => WARM.clone().lerp(MEMORY, memory), [memory])
@@ -133,8 +147,8 @@ export default function S02Cueva({ beat }: SceneProps) {
 
   return (
     <group>
-      <ambientLight intensity={0.35 + memory * 0.1} color={lightColor} />
-      <directionalLight position={[3, 12, 20]} intensity={0.6} color={lightColor} />
+      <ambientLight intensity={0.35 + memory * 0.1 + 0.3 * outside} color={lightColor} />
+      <directionalLight position={[3, 12, 20]} intensity={0.6 + 0.5 * outside} color={lightColor} />
       <pointLight position={[-1, 5, 0]} intensity={40} distance={22} color={lightColor} />
 
       {/* cueva: entrada hacia +Z; el fallback es el domo hueco de antes */}
@@ -142,9 +156,9 @@ export default function S02Cueva({ beat }: SceneProps) {
         <sphereGeometry args={[400, 16, 10]} />
         <meshBasicMaterial color="#a9c4dc" side={THREE.BackSide} fog={false} depthWrite={false} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.06, 20]}>
-        <circleGeometry args={[300, 32]} />
-        <meshStandardMaterial color="#8a9a62" />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.06, 20]} renderOrder={-1}>
+        <circleGeometry args={[600, 48]} />
+        <meshStandardMaterial color="#b4c485" alphaMap={fade} transparent depthWrite={false} />
       </mesh>
       <Model
         name="cueva"

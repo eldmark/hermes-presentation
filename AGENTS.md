@@ -1,6 +1,6 @@
 # Presentación 3D: Hermes
 
-Presentación estática en 3D sobre Hermes para una exposición universitaria de mitología (3 personas, unos 15 minutos, proyector y control de presentación). La cámara sigue a Hermes por 10 escenas. La ruta `#/script` muestra el guion para leerlo en el celular. Todo el texto visible está en español.
+Presentación estática en 3D sobre Hermes para una exposición universitaria de mitología (3 personas, unos 15 minutos, proyector y control de presentación). La cámara sigue a Hermes por 12 escenas (la 10 son los conceptos, la 11 la actividad y la 12 las referencias). La ruta `#/script` muestra el guion para leerlo en el celular. Todo el texto visible está en español.
 
 ## Comandos
 
@@ -12,6 +12,7 @@ Bun está en `~/.bun/bin`; si no está en el PATH, usa `export PATH="$HOME/.bun/
 - `bun test`
 - `bun run build`
 - `bun run preview`
+- `bun run presentar` (build local para el proyector, en http://127.0.0.1:4173/)
 
 ## Definición de terminado
 
@@ -27,7 +28,10 @@ Bun está en `~/.bun/bin`; si no está en el PATH, usa `export PATH="$HOME/.bun/
 6. Las rutas de `public/` siempre pasan por `asset('models/x.glb')`, que usa `import.meta.env.BASE_URL`.
 7. Los placeholders se cambian por glb solo con `Model` y `ASSETS`.
 8. No agregues dependencias sin justificarlo. Ya están: three, @react-three/fiber, @react-three/drei, maath.
-9. Lo proyectado debe leerse desde el fondo del salón: texto en el overlay DOM, de 32 px o más.
+9. Lo proyectado debe leerse desde el fondo del salón: texto en el overlay DOM, de 32 px o más (los paneles de referencias, de 22 px o más).
+10. El cielo y la niebla de cada escena están en `src/presentation/atmosphere.ts`; las escenas vecinas se montan pero solo se ven durante el vuelo de cámara. Cada escena añade sus propias luces, moderadas (la luz base global es ambient 0.5 y directional 0.85).
+11. Quién dice cada línea está en `src/data/reparto.ts`; el guion no lleva `presenter` a mano.
+12. Para revisar cambios visuales usa capturas reales: `tools/shot.sh` y `tools/walk.sh` (un solo Chromium a la vez; la máquina tiene poca RAM, no lances más de dos agentes en paralelo).
 
 ## Mapa
 
@@ -36,6 +40,7 @@ Bun está en `~/.bun/bin`; si no está en el PATH, usa `export PATH="$HOME/.bun/
 - `src/presentation/`: navegación, cámara, teclado y overlay.
 - `src/components/`: componentes reutilizables (`three/` y `ui/`).
 - `src/scenes/`: una escena por archivo.
+- `tools/`: capturas y recorrido automático con Chromium.
 - `docs/working/`: documentación de trabajo. Empieza por `plan.md`.
 
 ## Estado y plan

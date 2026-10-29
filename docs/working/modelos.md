@@ -54,7 +54,7 @@ root > pelvis > torso > head
 
 `L` es la izquierda del personaje (x positivo) y `R` la derecha (x negativo). Los pivotes están en las articulaciones, así que basta con rotar cada nodo. `hand_L` y `hand_R` son empties donde se pueden sujetar objetos. El caduceo de Hermes va en su mano izquierda, dentro de la malla de `forearm_L`.
 
-**Todavía no están registrados en `ASSETS`**: hace falta que `Character` aprenda a animarlos por nombre de nodo. Hasta entonces se usan los personajes de formas simples.
+`Character` (con `Figure` y `figureMotion.ts`) los anima por nombre de nodo: caminar, saludar, volar, dormir, señalar y tocar la lira. Si un glb falla al cargar se dibuja el personaje de formas simples. Hermes ya trae dentro el caduceo, el petaso y las sandalias aladas; `holding` monta la carta, la lira o el moly en `hand_R`.
 
 ## Regenerar
 
@@ -74,6 +74,5 @@ Cada script crea su colección en Blender (no toca el resto de la escena), expor
 
 ## Pendiente
 
-- Integrar los personajes en `Character` (animación por nodos).
 - Rematar a mano lo que lo necesite: el estilo es limpio y esquemático, no realista.
 - Comprimir con `gltf-transform` (meshopt) antes del despliegue: el exportador de Blender no tiene meshopt.

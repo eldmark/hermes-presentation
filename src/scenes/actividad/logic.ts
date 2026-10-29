@@ -153,13 +153,13 @@ export function shotFor(id: string): S {
     return TOP([0, 0, 2], 12.5)
   }
   if (id === 'demo') return TOP([0, 0, 2], 13)
-  if (id === 'mesas') return { pos: [0, 7, 10], look: [0, 0.5, 0] }
+  if (id === 'mesas') return { pos: [0, 8, 12], look: [0, 0.5, -3.5] }
   if (id === 'cierre') return { pos: [0, 7.5, 7], look: [0, 2.5, -6] }
   const q = /^q(\d+)-(pregunta|cadena|respuesta)$/.exec(id)
   if (q) {
     const dx = (Number(q[1]) - 3) * 0.5
     const h = q[2] === 'cadena' ? 9 : 8.5
-    return { pos: [dx, h, 8], look: [0, 0.3, 0] }
+    return { pos: [dx, h, 10.5], look: [0, 0.3, 2.5] }
   }
   return TOP()
 }

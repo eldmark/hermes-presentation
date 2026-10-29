@@ -253,7 +253,7 @@ function quizBeats(): Beat[] {
 const S11: Beat[] = [
   { id: 'intro', stage: 'Hermes sostiene una carta con el sello de Zeus.',
     lines: [p('Hay cinco preguntas. Las cuatro opciones suenan parecido. Cuando la mano levantada empiece la cadena, las opciones desaparecen.')],
-    onScreen: 'El mensaje que no debe cambiar', label: { place: 'Las puertas del Olimpo' } },
+    onScreen: 'El mensaje que no debe cambiar', label: { place: 'La actividad' } },
   ...REGLAS.map((r, i): Beat => ({
     id: `reglas-${i + 1}`,
     stage: i === 0 ? 'Animación de reglas. Vista desde arriba de una mesa redonda con cinco figuras. Cada regla aparece con un icono y una línea breve.' : undefined,
@@ -376,7 +376,7 @@ const GUION: SceneData[] = [
   { id: 'conceptos', number: 10, title: 'Seis ideas para pensar a Hermes', minutes: [2, 3], place: 'El salón de las ideas',
     question: '¿Qué hace un dios que no manda, pero conecta?',
     sources: ['Detienne, M., & Vernant, J.-P. (1978), Cunning intelligence in Greek culture and society, para mêtis. Las demás definiciones (díkē, eleuthería, moira, areté, gnôsis) son glosas breves de esta presentación, ligadas a Homero, Odisea V y X, y al Himno homérico a Hermes.'], beats: S10 },
-  { id: 'actividad', number: 11, title: 'El mensaje que no debe cambiar', minutes: [4, 6], place: 'Las puertas del Olimpo',
+  { id: 'actividad', number: 11, title: 'El mensaje que no debe cambiar', minutes: [4, 6], place: 'La actividad',
     question: '¿Qué se pierde si el mensaje cambia en el camino?',
     sources: ['Adaptación del teléfono descompuesto con preguntas tipo Kahoot; las palabras parecidas son una decisión de diseño.'], beats: S11 },
   { id: 'referencias', number: 12, title: 'Referencias', minutes: [0.5, 1], place: 'Las puertas del Olimpo',

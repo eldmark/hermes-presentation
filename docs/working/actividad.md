@@ -35,7 +35,7 @@ El marcador se guarda en `localStorage` (`hermes.quiz`), así que sobrevive a re
 
 ## Configuración
 
-- Las preguntas y sus opciones están en `src/data/scenes.ts` y en el guion de la escena 10.
+- Las preguntas y sus opciones están en `src/data/scenes.ts` y en el guion de la actividad (escena 11).
 
 ## Si se equivocan
 

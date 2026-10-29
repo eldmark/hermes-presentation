@@ -15,11 +15,11 @@ export const shots: Shot[] = [
   { pos: [-5.5, 2.9, 9.5], look: [-3.5, 1.1, 0] },
   { pos: [-4, 2.3, 5.6], look: [-3.9, 1.5, -1.3] },
   { pos: [7, 3.2, 9.5], look: [7, 1, -1] },
-  { pos: [8.5, 5.5, 7.5], look: [10, 0, -5] },
+  { pos: [9.6, 3.4, 8.6], look: [9.2, 1.1, 0] },
   { pos: [13.5, 2.8, 8.5], look: [15, 1.5, 0] },
   { pos: [16.6, 2.4, 7.5], look: [16.8, 1.5, 1] },
   { pos: [9, 24, 14], look: [9, 0, -7] },
-  { pos: [14.5, 4, 11], look: [18.5, 1.2, 0] },
+  { pos: [14.5, 4, 11], look: [16.8, 1.2, 0] },
 ]
 
 const ROAD = '#b08a5a'
@@ -216,8 +216,8 @@ export default function S08Caminos({ beat }: SceneProps) {
   const kRoads = useDamp(beat >= 6 ? 1 : 0, 1.2)
 
   // Hermes camina por el camino según el paso.
-  const hx = [-4.6, -5.1, 5.2, 8.6, 13.2, 16, 12.5, 14][Math.min(beat, 7)]
-  const hz = beat === 3 ? -0.2 : beat === 5 ? 1.4 : 0.9
+  const hx = [-4.6, -5.1, 5.2, 9, 13.2, 16, 12.5, 14][Math.min(beat, 7)]
+  const hz = beat === 3 ? 1.3 : beat === 5 ? 1.4 : 0.9
   const heading = beat === 5 ? -0.9 : Math.PI / 2
   const hAction = beat === 1 || beat === 3 || beat === 5 || beat === 6 ? 'idle' : 'walk'
 

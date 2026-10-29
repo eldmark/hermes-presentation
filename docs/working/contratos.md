@@ -5,7 +5,7 @@ Todos los agentes deben respetar estas interfaces. Si hace falta cambiar una, se
 ## Datos (`src/data/types.ts`)
 
 ```ts
-export type SceneId = 'puertas'|'cueva'|'zeus'|'apolo'|'calipso'|'circe'|'almas'|'caminos'|'hoy'|'actividad';
+export type SceneId = 'puertas'|'cueva'|'zeus'|'apolo'|'calipso'|'circe'|'almas'|'caminos'|'hoy'|'conceptos'|'actividad'|'referencias';
 export type Speaker = 'expositor'|'narrador'|'presentador'|'hermes'|'zeus'|'calipso'|'apolo';
 export type PresenterId = 1 | 2 | 3;
 export type Vec3 = [number, number, number];
@@ -20,7 +20,8 @@ export interface Beat {
   label?: { place?: string; time?: string }; // rótulo; se hereda en los pasos siguientes hasta que otro lo cambie
   flashback?: boolean;                // tinte de recuerdo
   interaction?: string;               // instrucción para quien presenta ("El público señala; → revela")
-  quiz?: { q: number; phase: 'shown'|'hidden'|'revealed' }; // solo escena 10
+  panel?: Panel;                      // tarjeta DOM sobre el 3D
+  quiz?: { q: number; phase: 'shown'|'hidden'|'revealed' }; // solo la actividad (escena 11)
 }
 
 export interface SceneData {
@@ -38,7 +39,7 @@ export const SCENES: SceneData[];
 
 - Un `Beat` por cada «clic». Las subsecciones del guion (4.1 a 4.6, 5.1 a 5.5…) se parten en 2 a 4 pasos.
 - El componente 3D NO va en los datos (para que `/script` no importe three).
-- Los pasos de la escena 10 se generan desde `QUIZ`: `intro`, `reglas-1..6`, `demo`, `mesas` (el número de mesas se ingresa aquí), luego `q{n}-pregunta`, `q{n}-cadena`, `q{n}-respuesta` por pregunta, y `cierre`.
+- Los pasos de la actividad (escena 11) se generan desde `QUIZ`: `intro`, `reglas-1..6`, `demo`, `mesas` (el número de mesas se ingresa aquí), luego `q{n}-pregunta`, `q{n}-cadena`, `q{n}-respuesta` por pregunta, y `cierre`.
 
 ## Escena 3D
 
@@ -77,3 +78,18 @@ Utilidades: `asset(path)` usa `import.meta.env.BASE_URL`. `useSceneKeys(handler)
 ## Placeholders
 
 Mientras no haya modelos, todo se dibuja con geometrías simples (cajas, esferas, conos, cilindros) con colores distintivos. Cada personaje y objeto debe ser identificable: Hermes con sombrero alado y vara, la lira, la tortuga, el ganado, etc.
+
+## Paneles (`Beat.panel`)
+
+```ts
+type Panel =
+  | { kind: 'genealogia' }                                                  // árbol de Hermes (src/data/genealogia.ts)
+  | { kind: 'concepto'; term: string; greek: string; gloss: string; myth: string }
+  | { kind: 'referencias'; title: string; items: string[]; note?: string }  // `*cursiva*` se convierte en <em>
+```
+
+Posiciones en pantalla (para encuadrar el 3D en el lado libre): genealogía = mitad derecha (58 vw); concepto = tarjeta a la derecha (42 vw); referencias = panel grande centrado (86 vw).
+
+## Reparto
+
+`src/data/reparto.ts` asigna `presenter` (1, 2 o 3) a cada línea: primero la voz fija del personaje (`VOZ`), luego el responsable del paso (`PASOS`) y por último el de la escena (`ESCENA`).

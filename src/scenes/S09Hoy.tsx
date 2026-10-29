@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Hermes } from '../components/three/Hermes'
@@ -21,19 +21,87 @@ const HERMES_POS: Vec3[] = [
 const NET_LIT = [0, 0, 0, 0, 0, 5, 10, 10]
 
 export const shots: Shot[] = [
-  { pos: [-31, 3.5, PATH_Z + 11], look: [-26, 0.8, PATH_Z - 2] },
-  { pos: [ST.cielo + 0.8, 3.5, PATH_Z + 11], look: [ST.cielo + 0.8, 0.8, PATH_Z - 3] },
-  { pos: [ST.semana + 0.8, 3.5, PATH_Z + 11], look: [ST.semana + 0.8, 0.8, PATH_Z - 3] },
-  { pos: [ST.calle + 0.8, 3.5, PATH_Z + 11], look: [ST.calle + 0.8, 0.8, PATH_Z - 3] },
+  { pos: [-31, 4, PATH_Z + 13], look: [-26, 2.4, PATH_Z - 2] },
+  { pos: [ST.cielo + 0.8, 4, PATH_Z + 13], look: [ST.cielo + 0.8, 2.6, PATH_Z - 3] },
+  { pos: [ST.semana + 0.8, 4, PATH_Z + 13], look: [ST.semana + 0.8, 2.6, PATH_Z - 3] },
+  { pos: [ST.calle - 3, 4.2, PATH_Z + 17], look: [ST.calle - 3, 2.4, PATH_Z - 3] },
   { pos: [0.5, 3, 14], look: [0.5, 1, 0] },
   { pos: [1, 4, 15], look: [1, 0.8, 0] },
   { pos: [1, 5, 18], look: [1, 0.8, -1] },
   { pos: [0.5, 2.4, 8], look: [0.5, 1.7, 1.5] },
 ]
 
+const rnd = (i: number, k: number) => {
+  const a = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453
+  return a - Math.floor(a)
+}
+
+/** Alfa radial: el suelo de nubes se desvanece hacia el horizonte (disco de radio 110 m). */
+function fadeTexture() {
+  const c = document.createElement('canvas')
+  c.width = c.height = 256
+  const g = c.getContext('2d')!
+  const gr = g.createRadialGradient(128, 128, 0, 128, 128, 128)
+  gr.addColorStop(0, '#fff'); gr.addColorStop(0.3, '#fff'); gr.addColorStop(0.65, '#555'); gr.addColorStop(1, '#000')
+  g.fillStyle = gr
+  g.fillRect(0, 0, 256, 256)
+  return new THREE.CanvasTexture(c)
+}
+function glowTexture() {
+  const c = document.createElement('canvas')
+  c.width = c.height = 128
+  const g = c.getContext('2d')!
+  const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64)
+  gr.addColorStop(0, 'rgba(255,244,214,1)'); gr.addColorStop(0.25, 'rgba(255,232,170,0.55)'); gr.addColorStop(1, 'rgba(255,225,160,0)')
+  g.fillStyle = gr
+  g.fillRect(0, 0, 128, 128)
+  return new THREE.CanvasTexture(c)
+}
+
+const CLOUDS = Array.from({ length: 22 }, (_, i) => {
+  const side = i % 3
+  const x = side === 0 ? -70 + rnd(i, 1) * 50 : side === 1 ? -30 + rnd(i, 1) * 60 : 10 + rnd(i, 1) * 40
+  return { x, z: -6 - rnd(i, 2) * 70, y: -1.4 + rnd(i, 3) * 0.8, s: 2.2 + rnd(i, 4) * 1.6, yaw: rnd(i, 5) * 6.2 }
+}).concat([{ x: -48, z: 4, y: -1.6, s: 3, yaw: 1 }])
+
+/** Suelo de nubes con sol y el Olimpo a lo lejos. `drop` baja el suelo cuando Hermes queda en medio de la red. */
+function Ambiente({ drop }: { drop: number }) {
+  const fade = useMemo(fadeTexture, [])
+  const glow = useMemo(glowTexture, [])
+  return (
+    <group>
+      <group position={[0, -drop, 0]}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-12, -0.14, 0]} renderOrder={-1}>
+          <circleGeometry args={[110, 40]} />
+          <meshStandardMaterial color="#f7f4ee" emissive="#e9e6e0" emissiveIntensity={0.6} alphaMap={fade} transparent depthWrite={false} />
+        </mesh>
+        {CLOUDS.map((c, i) => (
+          <group key={i} position={[c.x, c.y, c.z]}>
+            <Model name="nube" fallback={null} scale={c.s} yaw={c.yaw} />
+          </group>
+        ))}
+      </group>
+      {/* sol */}
+      <sprite position={[-12, 15, -70]} scale={[36, 36, 1]}>
+        <spriteMaterial map={glow} transparent depthWrite={false} fog={false} blending={THREE.AdditiveBlending} />
+      </sprite>
+      <mesh position={[-12, 15, -70]}>
+        <circleGeometry args={[3.2, 28]} />
+        <meshBasicMaterial color="#fff6d8" fog={false} toneMapped={false} />
+      </mesh>
+      {/* el Olimpo, lejano */}
+      <group position={[-40, 2, -62]} scale={1.5}><Model name="olimpo_templo" fallback={null} yaw={0.25} /></group>
+      <group position={[18, 4, -78]} scale={2}><Model name="olimpo_templo" fallback={null} yaw={-0.3} /></group>
+      <group position={[-12, 1, -58]} scale={1.8}><Model name="olimpo_columna" fallback={null} /></group>
+      <group position={[-8, 1, -60]} scale={1.4}><Model name="olimpo_columna" fallback={null} /></group>
+      <group position={[-17, 1, -57]} scale={1.5}><Model name="olimpo_columna" fallback={null} /></group>
+    </group>
+  )
+}
+
 function Planet({ on }: { on: number }) {
   return (
-    <group position={[ST.cielo, 3, PATH_Z - 3]} scale={Math.max(0.001, on) * 1.3}>
+    <group position={[ST.cielo, 3, PATH_Z - 3]} scale={Math.max(0.001, on) * 2}>
       <mesh>
         <sphereGeometry args={[0.9, 20, 14]} />
         <meshStandardMaterial color="#b8a58c" roughness={0.9} />
@@ -48,7 +116,7 @@ function Planet({ on }: { on: number }) {
 
 function Calendar({ on }: { on: number }) {
   return (
-    <group position={[ST.semana, 2.4, PATH_Z - 3]} scale={Math.max(0.001, on) * 1.4}>
+    <group position={[ST.semana, 2.4, PATH_Z - 3]} scale={Math.max(0.001, on) * 2.2}>
       <mesh><boxGeometry args={[1.8, 1.8, 0.08]} /><meshStandardMaterial color="#f4f1ea" /></mesh>
       <mesh position={[0, 0.7, 0.05]}><boxGeometry args={[1.8, 0.4, 0.04]} /><meshStandardMaterial color="#c2403a" /></mesh>
       {[0, 1, 2, 3, 4, 5, 6].map((d) => (
@@ -63,7 +131,7 @@ function Calendar({ on }: { on: number }) {
 
 function CaduceoSymbol({ on }: { on: number }) {
   return (
-    <group position={[ST.calle, 0, PATH_Z - 3]} scale={Math.max(0.001, on) * 1.2}>
+    <group position={[ST.calle, 0, PATH_Z - 3]} scale={Math.max(0.001, on) * 1.7}>
       <mesh position={[0, 1.5, 0]}><cylinderGeometry args={[0.07, 0.07, 3, 8]} /><meshStandardMaterial color="#e8c24a" metalness={0.5} roughness={0.4} /></mesh>
       <mesh position={[0, 3.1, 0]}><sphereGeometry args={[0.16, 10, 8]} /><meshStandardMaterial color="#e8c24a" /></mesh>
       {[0, Math.PI].map((ph, i) => (
@@ -119,6 +187,7 @@ export default function S09Hoy({ beat }: SceneProps) {
   const lit = useDamp(NET_LIT[b], 1.2)
   const netOn = useDamp(beat >= 4 ? 1 : 0)
   const carta = useDamp(beat >= 7 ? 1 : 0)
+  const drop = useDamp(beat >= 4 ? 6.5 : 0, 1.0)
 
   return (
     <group>
@@ -126,24 +195,18 @@ export default function S09Hoy({ beat }: SceneProps) {
       <directionalLight position={[6, 10, 8]} intensity={1.1} />
       <pointLight position={[0.5, 4, 3]} intensity={beat >= 6 ? 30 : 6} color="#ffd978" />
 
-      {/* nubes de fondo: cielo en los pasos 0 y 1 */}
-      {beat <= 1 && (
-        <group>
-          <group position={[-34, 9, -6]}><Model name="nube" fallback={null} scale={2.2} yaw={0.6} /></group>
-          <group position={[-22, 12, -10]}><Model name="nube" fallback={null} scale={2.8} yaw={2.2} /></group>
-          <group position={[-12, 8, -4]}><Model name="nube" fallback={null} scale={1.8} yaw={4} /></group>
-        </group>
-      )}
+      <Ambiente drop={drop} />
 
       {/* camino de siglos */}
       {pathFade > 0.01 && (
         <group>
           <GlowLine points={PATH} progress={pathP} color="#ffd978" width={4} opacity={pathFade} />
           {[-30, -26, -22, -18, -14, -10].map((x) => (
-            <mesh key={x} position={[x, 0.15, PATH_Z + 0.6]} scale={pathFade}>
-              <boxGeometry args={[0.15, 0.3, 0.15]} />
-              <meshStandardMaterial color="#6b5d86" />
-            </mesh>
+            <group key={x} position={[x, 0, PATH_Z - 1.3]} scale={pathFade}>
+              <mesh position={[0, 0.2, 0]}><boxGeometry args={[0.9, 0.4, 0.9]} /><meshStandardMaterial color="#d9d2c0" flatShading /></mesh>
+              <mesh position={[0, 0.85, 0]}><boxGeometry args={[0.5, 0.9, 0.5]} /><meshStandardMaterial color="#efe9da" flatShading /></mesh>
+              <mesh position={[0, 1.45, 0]}><boxGeometry args={[0.62, 0.3, 0.62]} /><meshStandardMaterial color="#e0b64a" emissive="#9a7418" emissiveIntensity={0.5} flatShading /></mesh>
+            </group>
           ))}
         </group>
       )}
@@ -152,15 +215,15 @@ export default function S09Hoy({ beat }: SceneProps) {
       <Planet on={cielo} />
       <Calendar on={semana} />
       <CaduceoSymbol on={calle} />
-      {cielo > 0.05 && <InfoCard3D position={[ST.cielo, 5.3, PATH_Z - 3]} title="Mercurio" subtitle="el cielo" highlighted={beat === 1 || beat >= 3} />}
-      {semana > 0.05 && <InfoCard3D position={[ST.semana, 4.8, PATH_Z - 3]} title="miércoles" subtitle="dies Mercurii" highlighted={beat === 2 || beat >= 3} />}
-      {calle > 0.05 && <InfoCard3D position={[ST.calle, 4.7, PATH_Z - 3]} title="caduceo" subtitle="la calle" highlighted={beat >= 3} />}
+      {cielo > 0.05 && <group position={[ST.cielo, 6.2, PATH_Z - 3]} scale={1.5}><InfoCard3D position={[0, 0, 0]} title="Mercurio" subtitle="el cielo" highlighted={beat === 1 || beat >= 3} /></group>}
+      {semana > 0.05 && <group position={[ST.semana, 5.8, PATH_Z - 3]} scale={1.5}><InfoCard3D position={[0, 0, 0]} title="miércoles" subtitle="dies Mercurii" highlighted={beat === 2 || beat >= 3} /></group>}
+      {calle > 0.05 && <group position={[ST.calle, 6.8, PATH_Z - 3]} scale={1.5}><InfoCard3D position={[0, 0, 0]} title="caduceo" subtitle="la calle" highlighted={beat >= 3} /></group>}
 
       {/* red del Olimpo (pareja de la portada) */}
       <group scale={Math.max(0.001, netOn) * 1.2}>
         {Object.entries(OLYMPUS_NETWORK.nodes).map(([id, p]) => (
           <mesh key={id} position={p}>
-            <sphereGeometry args={[0.1, 8, 8]} />
+            <sphereGeometry args={[0.15, 10, 8]} />
             <meshBasicMaterial color="#4a4a6a" />
           </mesh>
         ))}
@@ -170,7 +233,7 @@ export default function S09Hoy({ beat }: SceneProps) {
       <Hermes
         position={target}
         rotation={beat <= 3 ? Math.PI / 2 : 0}
-        action={walking ? 'walk' : beat >= 6 ? 'wave' : 'idle'}
+        action={walking ? 'walk' : beat >= 6 ? 'wave' : beat >= 4 ? 'fly' : 'idle'}
         holding={beat >= 7 ? 'carta' : undefined}
       />
       <Carta on={carta} />

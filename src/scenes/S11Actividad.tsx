@@ -163,7 +163,7 @@ export default function S11Actividad({ data, beat, beatId, active }: SceneProps)
     const per = (PATH.length - 1) / (SEATS - 1)
     return Array.from({ length: SEATS - 1 }, (_, k) => PATH.slice(k * per, (k + 1) * per + 1))
   }, [])
-  const hermesPos: [number, number, number] = st.away ? [10, 0, -7] : [5, 0, 3.5]
+  const hermesPos: [number, number, number] = st.away ? [10, 0, -7] : [5, 0, 2.2]
 
   return (
     <group>

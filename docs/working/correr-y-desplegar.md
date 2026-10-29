@@ -37,3 +37,21 @@ Meta: menos de 3 MB por modelo y menos de 20 MB en total. No uses Git LFS con Pa
 ## Plan B sin internet
 
 Lleva el build en la laptop: `bun run build && bun run preview`. Abrir `dist/index.html` con `file://` no funciona.
+
+## Presentar desde el build local
+
+```
+bun run presentar        # tsc + vite build + vite preview en http://127.0.0.1:4173/
+bun run presentar:red    # igual, pero visible desde otros dispositivos de la red (guion en los celulares)
+```
+
+Abrir la dirección en el navegador y poner pantalla completa con `F`. No requiere internet. Más en `guia-de-exposicion.md`.
+
+## Revisar con capturas
+
+```
+OUT=/tmp/capturas tools/shot.sh "4/2" "4/6"        # pasos concretos (VIEW=1024x768 para probar 4:3)
+OUT=/tmp/recorrido tools/walk.sh "1/0" 40           # recorrido con → desde el paso dado
+```
+
+Necesitan `bun run dev` corriendo en http://127.0.0.1:5175/ (`BASE=` para otra dirección) y el paquete `playwright` (ruta en `PLAYWRIGHT_DIR`). Solo corre un Chromium a la vez.

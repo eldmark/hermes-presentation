@@ -57,3 +57,16 @@ Orden recomendado: S01 y S10b primero (inicio y actividad), luego el resto.
 Audio, modelos reales (quedan los placeholders), clics con mouse, efectos finos, animación de reglas (pasa a lista), `#/lab`, filtro por persona.
 
 No se recorta: navegación por pasos, textos en pantalla, marcador y preguntas de la escena 10, `#/script` y despliegue.
+
+## Fase 8: contenido y pulido final
+- [x] Seis ideas (escena 10: *mêtis*, *díkē*, *eleuthería*, *moira*, *areté*, *gnôsis*) con definición y vínculo con el mito.
+- [x] Árbol genealógico de Hermes (escena 2, paso `familia`).
+- [x] Referencias en formato APA (escena 12) y fuentes de la escena 9.
+- [x] Reparto entre las tres personas (`src/data/reparto.ts`).
+- [x] Proyector: campo de visión según el formato, resolución adaptable, `bun run presentar`.
+- [x] Cielo y niebla por escena; escenas vecinas ocultas salvo en el vuelo.
+- [x] Recorrido completo con capturas (`tools/walk.sh`) y primera ronda de correcciones.
+- [ ] Pulida de las escenas 7, 9, 5, 2, 4, 8, 11 y 12 (en curso).
+- [ ] Ensayo con cronómetro y recorte de texto (hoy ≈ 17 min de voz).
+- [ ] Comprimir los modelos con gltf-transform.
+- [ ] Despliegue en GitHub Pages (opcional: se presenta desde el build local).
