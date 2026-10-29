@@ -41,6 +41,8 @@ Los modelos se generan con scripts de `blender/` mediante el puente de Blender (
 
 `hermes.glb`, `apolo.glb`, `odiseo.glb`, `calipso.glb`, `maia.glb` y `humano.glb` (genérico, para compañeros de Odiseo, pretendientes y almas). Miden ~1,8 m de alto, de pie sobre el origen, mirando hacia +Z.
 
+**Hermes** (`hermes.glb`, ~30 000 vértices y 1,4 MB) es el más detallado: anatomía modelada con superficies suaves (torso con pectorales y abdomen, brazos y piernas musculados, manos con dedos, pies con sandalias de correas), rostro (ojos con iris, cejas, nariz, labios y orejas), cabello rizado rubio, petaso con alas de plumas, capa con pliegues, falda de tiras sobre túnica azul, banda de cuero con bolsa y papiros, brazaletes dorados, grebas con volutas, alas en los tobillos y el caduceo con dos serpientes y alas en la mano izquierda. Se genera con `blender/hermes.py` (usa la biblioteca `blender/loft.py`); la versión sencilla anterior sigue en `blender/hermes_simple.py`. Mide ~1,87 m con la cabeza y el petaso.
+
 Cada uno es una jerarquía de nodos con nombre, para que el código los mueva:
 
 ```
@@ -65,7 +67,7 @@ python3 -I blender/send.py blender/trees.py
 python3 -I blender/send.py blender/olimpo.py
 python3 -I blender/send.py blender/zeus.py
 python3 -I blender/send.py blender/vaca.py
-python3 -I blender/send.py blender/hermes.py
+python3 -I blender/send.py blender/hermes.py        # o sin interfaz: blender -b --factory-startup -P blender/hermes.py
 python3 -I blender/send.py blender/personajes.py
 python3 -I blender/send.py blender/props.py
 ```

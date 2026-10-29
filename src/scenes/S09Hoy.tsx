@@ -154,8 +154,8 @@ function CaduceoSymbol({ on }: { on: number }) {
   )
 }
 
-/** Carta grande con sello cuyo color parpadea (la palabra cambia de letras). */
-function Carta({ on }: { on: number }) {
+/** Carta de respaldo: hoja con sello cuyo color parpadea (la palabra cambia de letras). */
+function CartaPlano() {
   const seal = useRef<THREE.MeshBasicMaterial>(null)
   useFrame(({ clock }) => {
     const m = seal.current
@@ -164,12 +164,28 @@ function Carta({ on }: { on: number }) {
     m.color.set(['#b3202a', '#e8c24a', '#3a7bd5', '#4a9a4a'][t])
   })
   return (
-    <group position={[0.5, 3.4, 2.6]} scale={Math.max(0.001, on)}>
+    <>
       <mesh><boxGeometry args={[1.6, 1.1, 0.04]} /><meshStandardMaterial color="#fffaf0" /></mesh>
       <mesh position={[0, 0, 0.04]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.2, 0.2, 0.03, 14]} />
         <meshBasicMaterial ref={seal} color="#b3202a" />
       </mesh>
+    </>
+  )
+}
+
+/** El papiro sellado de Hermes, grande y flotando. */
+function Carta({ on }: { on: number }) {
+  const g = useRef<THREE.Group>(null)
+  useFrame(({ clock }) => {
+    const o = g.current
+    if (!o) return
+    o.rotation.y = Math.sin(clock.elapsedTime * 0.6) * 0.45
+    o.position.y = 3.6 + Math.sin(clock.elapsedTime * 1.2) * 0.08
+  })
+  return (
+    <group ref={g} position={[0.5, 3.6, 2.6]} scale={Math.max(0.001, on)}>
+      <Model name="carta" scale={5} fallback={<CartaPlano />} />
     </group>
   )
 }
