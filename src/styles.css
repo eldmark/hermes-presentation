@@ -28,3 +28,6 @@ html,body,#root{margin:0;height:100%;background:#0b0b14}
   .ov-word{transition:none;transform:none}
   .stage-root canvas,.stage-root::after{transition:none}
 }
+
+/* Separador dorado entre las palabras que se van revelando una a una. */
+.ov-word:not(:first-child)::before{content:"·";display:inline-block;margin:0 .4em 0 .05em;color:#e6c765;opacity:.9}

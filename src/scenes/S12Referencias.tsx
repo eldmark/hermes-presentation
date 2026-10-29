@@ -14,6 +14,8 @@ export const shots: Shot[] = [
   { pos: [0, 5.2, 38], look: [0, 2, -2] },
   { pos: [0, 6, 42], look: [0, 2.8, -3] },
   { pos: [0, 6.8, 47], look: [0, 3.6, -4] },
+  { pos: [0, 7.4, 51], look: [0, 4.2, -4] },
+  { pos: [0, 8, 55], look: [0, 4.8, -5] },
 ]
 
 const STONE = '#e9e2d3'

@@ -1,10 +1,11 @@
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { PerformanceMonitor } from '@react-three/drei'
-import { MathUtils } from 'three'
+import { Color, Fog, MathUtils } from 'three'
 import type { PerspectiveCamera } from 'three'
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import { SCENES } from '../data/scenes'
 import { Hud, plannedSeconds } from '../components/ui/Hud'
+import { ATMOSPHERE } from './atmosphere'
 import { CameraRig } from './CameraRig'
 import { Stage } from './Stage'
 import { formatHash, navigate, parseHash } from './navigation'
@@ -33,6 +34,32 @@ function ProjectorFit() {
     }
     camera.updateProjectionMatrix()
   }, [camera, size.width, size.height])
+  return null
+}
+
+/** Cielo y niebla por escena, con transición suave al cambiar de escena. */
+function SceneAtmosphere({ sceneIndex }: { sceneIndex: number }) {
+  const scene = useThree((s) => s.scene)
+  const target = ATMOSPHERE[SCENES[sceneIndex]!.id]
+  const tc = useRef(new Color(target.sky))
+  tc.current.set(target.sky)
+  useEffect(() => {
+    scene.background = new Color(target.sky)
+    scene.fog = new Fog(target.sky, target.near, target.far)
+    return () => { scene.background = null; scene.fog = null }
+    // se crea una sola vez; los cambios los anima useFrame
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scene])
+  useFrame((_, dtRaw) => {
+    const k = 1 - Math.exp(-3 * Math.min(dtRaw, 0.1))
+    if (scene.background instanceof Color) scene.background.lerp(tc.current, k)
+    const fog = scene.fog as Fog | null
+    if (fog) {
+      fog.color.lerp(tc.current, k)
+      fog.near += (target.near - fog.near) * k
+      fog.far += (target.far - fog.far) * k
+    }
+  })
   return null
 }
 
@@ -103,10 +130,10 @@ export default function Presentation() {
         <ProjectorFit />
         {/* Si el equipo va justo de fps, baja la resolución de render sola; si recupera, la sube. */}
         <PerformanceMonitor flipflops={3} onDecline={() => setDpr(1)} onFallback={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
-        <color attach="background" args={['#0b0b14']} />
-        <fog attach="fog" args={['#0b0b14', 60, 260]} />
-        <ambientLight intensity={0.8} />
-        <directionalLight position={[10, 20, 10]} intensity={1.5} />
+        <SceneAtmosphere sceneIndex={nav.scene} />
+        {/* Luz de base suave: cada escena añade la suya. */}
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 20, 10]} intensity={0.85} />
         <Stage scene={nav.scene} beat={nav.beat} />
         <CameraRig scene={nav.scene} beat={nav.beat} />
       </Canvas>

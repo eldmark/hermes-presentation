@@ -9,7 +9,7 @@ export function renderItalics(text: string): ReactNode[] {
 export function ReferencesPanel({ title, items, note }: { title: string; items: string[]; note?: string }) {
   const long = items.reduce((n, s) => n + s.length, 0)
   // Más texto => letra más chica (la lista de 5 ítems largos usa el mínimo).
-  const size = long > 800 ? 'pn-ref-s' : long > 520 ? 'pn-ref-m' : 'pn-ref-l'
+  const size = long > 900 ? 'pn-ref-s' : long > 620 ? 'pn-ref-m' : 'pn-ref-l'
   return (
     <section className={`pn-refs ${size}`}>
       <h2 className="pn-ref-title">{title}</h2>

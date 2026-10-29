@@ -310,25 +310,31 @@ const S12: Beat[] = [
   { id: 'gracias', stage: 'Hermes se despide frente a las puertas del Olimpo, ahora abiertas. La cámara se aleja y aparecen las referencias.',
     lines: [p("Gracias por acompañarnos en este recorrido. Estas son las fuentes en las que nos apoyamos.")],
     onScreen: 'Gracias', label: { place: 'Las puertas del Olimpo' } },
-  { id: 'ref-antiguas', stage: 'Lista de fuentes antiguas.', lines: [],
+  { id: 'ref-antiguas', stage: 'Lista de fuentes antiguas (1 de 2).', lines: [],
     interaction: 'Sin texto: dejar la lista a la vista y abrir la ronda de preguntas.',
     panel: { kind: 'referencias', title: 'Fuentes antiguas', items: [
       'Hesíodo. (1914). *Teogonía* (H. G. Evelyn-White, Trad.). Loeb Classical Library. Theoi Classical Texts Library. https://www.theoi.com/Text/HesiodTheogony.html',
       'Himno homérico a Hermes [Himno 4]. (1914). En H. G. Evelyn-White (Trad.), *Hesiod, the Homeric Hymns, and Homerica*. Loeb Classical Library. Mythopedia. https://mythopedia.com/library/homeric-hymns-evelyn-white-1914/4-to-hermes/',
-      'Homero. (1919). *Odisea*, cantos V, X y XXIV (A. T. Murray, Trad.). Loeb Classical Library. Theoi Classical Texts Library. https://www.theoi.com/Text/HomerOdyssey5.html · …/HomerOdyssey10.html · …/HomerOdyssey24.html',
     ] } },
-  { id: 'ref-estudios', stage: 'Lista de estudios y obras de consulta.', lines: [],
-    panel: { kind: 'referencias', title: 'Estudios y obras de consulta', items: [
+  { id: 'ref-homero', stage: 'Lista de fuentes antiguas (2 de 2) y estudios.', lines: [],
+    panel: { kind: 'referencias', title: 'Homero y estudios', items: [
+      'Homero. (1919). *Odisea*, cantos V, X y XXIV (A. T. Murray, Trad.). Loeb Classical Library. Theoi Classical Texts Library. https://www.theoi.com/Text/HomerOdyssey5.html · …/HomerOdyssey10.html · …/HomerOdyssey24.html',
       'Detienne, M., & Vernant, J.-P. (1978). *Cunning intelligence in Greek culture and society* (J. Lloyd, Trad.). Harvester Press. (Obra original publicada en 1974).',
       'Friedlander, W. J. (1992). *The golden wand of medicine: A history of the caduceus symbol in medicine*. Greenwood Press.',
+    ] } },
+  { id: 'ref-consulta', stage: 'Obras de consulta.', lines: [],
+    panel: { kind: 'referencias', title: 'Obras de consulta', items: [
       'Real Academia Española. (s. f.). Miércoles. En *Diccionario de la lengua española* (23.ª ed.). Recuperado el 29 de octubre de 2026, de https://dle.rae.es/miércoles',
       'NASA. (s. f.). *Mercury*. NASA Science. Recuperado el 29 de octubre de 2026, de https://science.nasa.gov/mercury/',
     ] } },
-  { id: 'ref-museos', stage: 'Lista de objetos de museo.', lines: [],
-    panel: { kind: 'referencias', title: 'Museos', items: [
+  { id: 'ref-met', stage: 'Objetos del Metropolitan Museum of Art.', lines: [],
+    panel: { kind: 'referencias', title: 'Metropolitan Museum of Art', items: [
       'The Metropolitan Museum of Art. (s. f.). *Bronze herm* [Herma de bronce, griego arcadio, ca. 490 a. C.]. https://www.metmuseum.org/art/collection/search/255933',
       'The Metropolitan Museum of Art. (s. f.). *Bronze herm* [Herma de bronce, romano, siglos I–II d. C.]. https://www.metmuseum.org/art/collection/search/250735',
       'The Metropolitan Museum of Art. (s. f.). *Bronze statuette of Hermes seated on a rock* [Estatuilla de bronce de Hermes sentado sobre una roca, romano, siglos I–II d. C.]. https://www.metmuseum.org/art/collection/search/250955',
+    ], note: 'Las descripciones entre corchetes en español son traducciones nuestras de los títulos de los museos.' } },
+  { id: 'ref-bm', stage: 'Objetos del British Museum.', lines: [],
+    panel: { kind: 'referencias', title: 'British Museum', items: [
       'British Museum. (s. f.). *Inscripción dedicada a Hermes Agoraios* [Objeto G_1864-0220-100]. https://www.britishmuseum.org/collection/object/G_1864-0220-100',
       'British Museum. (s. f.). *Gods and goddesses of Roman Britain*. https://www.britishmuseum.org/learn/schools/ages-7-11/ancient-rome/gods-and-goddesses-roman-britain',
     ] } },
@@ -337,7 +343,7 @@ const S12: Beat[] = [
       'Modelos 3D, escenas y animaciones: elaboración propia con Blender y three.js. Código en https://github.com/eldmark/hermes-presentation',
       'Yliade. (s. f.). *Hermes* [Ilustración digital]. Usada solo como referencia visual para el diseño del personaje; no se reproduce.',
       'Ilustración 3D de Zeus en un trono dorado [Imagen de un banco de imágenes, autoría no identificada]. Usada solo como referencia visual para el diseño del trono; no se reproduce.',
-    ], note: 'Las descripciones entre corchetes en español son traducciones nuestras de los títulos de los museos.' } },
+    ] } },
 ]
 
 const GUION: SceneData[] = [
