@@ -2,13 +2,13 @@
 
 Presentación 3D para una exposición universitaria de mitología sobre **Hermes**, mensajero de los dioses. La cámara sigue a Hermes por doce escenas, desde las puertas del Olimpo hasta una actividad final con el público y la lista de referencias. Está pensada para tres personas que exponen, un proyector y un control de presentación.
 
-La pregunta que guía todo: **¿podría Hermes ser el dios más importante del mundo?** La exposición la responde recorriendo sus mitos y pensando por qué la comunicación importa.
+La exposición recorre sus mitos y piensa por qué la comunicación importa, hasta plantear al final la pregunta que lo resume: **¿podría Hermes ser el dios más importante del mundo?**
 
 ## Las doce escenas
 
 | # | Escena | Qué cuenta |
 |---|---|---|
-| 1 | Las puertas del Olimpo | Presentación y la pregunta conductora |
+| 1 | Las puertas del Olimpo | Presentación y un mundo conectado por mensajes |
 | 2 | La cueva de Maia | Nacimiento, **árbol genealógico** (Zeus, Maia, Apolo), la lira y la tortuga |
 | 3 | El mensaje de Zeus | Zeus en su trono envía a Hermes con Calipso |
 | 4 | Hermes y Apolo | El robo del ganado, el juicio y la lira |
@@ -16,7 +16,7 @@ La pregunta que guía todo: **¿podría Hermes ser el dios más importante del m
 | 6 | Lo que Hermes sabía de Circe | El *moly* y la advertencia a Odiseo |
 | 7 | Hermes, guía de las almas | El tránsito entre mundos |
 | 8 | Los caminos de Hermes y Mercurio | Hermas, mercado y la versión romana, Mercurio |
-| 9 | Lo que queda de Hermes | Pervivencia y respuesta a la pregunta inicial |
+| 9 | Lo que queda de Hermes | Pervivencia y respuesta a la pregunta sobre su importancia |
 | 10 | Seis ideas para pensar a Hermes | *Mêtis*, *díkē*, *eleuthería*, *moira*, *areté* y *gnôsis*, cada una con su definición y su vínculo con el mito |
 | 11 | El mensaje que no debe cambiar | Actividad: concurso de preguntas con cadena de susurros |
 | 12 | Referencias | Despedida y fuentes en formato APA |

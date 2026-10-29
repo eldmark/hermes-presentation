@@ -24,10 +24,10 @@ const S1: Beat[] = [
     lines: [
       x("Bienvenidos al Olimpo. Somos [nombres] y hoy vamos a hablar de Hermes."),
       h("Mensajero de los dioses. Encantado. Si alguien necesita decirle algo a Zeus, hagan fila."),
-    ], onScreen: 'Hermes: ¿el dios más importante del mundo?', label: { place: 'Las puertas del Olimpo' } },
-  { id: 'pregunta', stage: 'Pausa breve. Se iluminan las conexiones entre distintos lugares del Olimpo.',
-    lines: [x("Pero antes queremos hacerles una pregunta: ¿podría Hermes ser el dios más importante de todos?")],
-    onScreen: '¿Podría Hermes ser el dios más importante de todos?', interaction: 'Pausa breve; dejar que el público piense la pregunta.' },
+    ], onScreen: 'Hermes, mensajero de los dioses', label: { place: 'Las puertas del Olimpo' } },
+  { id: 'red', stage: 'Se iluminan las conexiones entre distintos lugares del Olimpo.',
+    lines: [x("Detrás de estas puertas el mundo está conectado: cada línea de luz es un camino que alguien recorre llevando una orden, una advertencia o una petición de ayuda.")],
+    onScreen: 'Un mundo conectado' },
   { id: 'conexiones', stage: 'Las líneas se apagan. Hermes observa un mensaje que acaba de recibir.',
     lines: [
       x("Imaginen que esas conexiones desaparecen. ¿Cómo se transmite una orden? ¿Cómo llega una advertencia? ¿Cómo sabe alguien que necesita ayuda?")] },
@@ -210,7 +210,7 @@ const S9: Beat[] = [
       n("El dios que unía lugares terminó dándole nombre a un planeta, a un día de la semana y a un símbolo que reconocemos en la calle."),
     ], onScreen: ['Mercurio', 'miércoles', 'caduceo'] },
   { id: 'pregunta', stage: 'Hermes queda en el centro del mapa de conexiones, igual que en la escena 1. Las líneas están apagadas.',
-    lines: [n("Al empezar preguntamos si Hermes podía ser el dios más importante. Zeus tenía el poder de decidir. Hermes no. Pero veamos qué ocurrió cada vez que su camino quedó cortado.")],
+    lines: [n("Entonces, ¿podría Hermes ser el dios más importante? Zeus tenía el poder de decidir. Hermes no. Pero veamos qué ocurrió cada vez que su camino quedó cortado.")],
     onScreen: '¿Podría Hermes ser el dios más importante del mundo?' },
   { id: 'lineas', stage: 'Las líneas se encienden una por una, cada una ligada a una escena anterior: Olimpo → isla de Calipso (que la decisión llegara a quien debía cumplirla); camino de Odiseo → casa de Circe (que supiera qué esperar y llevara el moly); palacio de Ítaca → lugar de los muertos (que alguien los acompañara); Grecia → Roma (que el dios siguiera reconocible).',
     lines: [n("Hermes no mandaba. Pero sin él, las decisiones se quedaban donde se tomaban, las advertencias no llegaban y los caminos no se conectaban.")],
@@ -269,7 +269,7 @@ const S11: Beat[] = [
   { id: 'cierre', stage: 'Tras la quinta pregunta, el marcador queda al centro. Una línea luminosa baja desde la carta y recorre las cinco palabras de las respuestas. Al final, la carta se cierra. Hermes saluda, las puertas del Olimpo se abren detrás de él y la cámara se aleja.',
     lines: [
       p('Ganó la mesa [nombre]. Pero fíjense en lo que pasó: la respuesta a veces se deformaba a medio camino, aunque todos quisieran decir lo mismo. Hermes no podía permitírselo.'),
-      p('Él no decidía lo que Zeus mandaba, pero era la razón de que llegara completo. Por eso la pregunta con la que empezamos tiene una respuesta: sin comunicación, no hay a quién obedecer, advertir ni acompañar. Gracias.'),
+      p('Él no decidía lo que Zeus mandaba, pero era la razón de que llegara completo. Por eso la pregunta sobre su importancia tiene una respuesta: sin comunicación, no hay a quién obedecer, advertir ni acompañar. Gracias.'),
     ], onScreen: QUIZ.questions.map(q => q.options[q.correct]) },
 ]
 
@@ -348,7 +348,7 @@ const S12: Beat[] = [
 
 const GUION: SceneData[] = [
   { id: 'puertas', number: 1, title: 'Las puertas del Olimpo', minutes: [0.75, 1], place: 'Las puertas del Olimpo',
-    question: '¿Podría Hermes ser el dios más importante del mundo?', beats: S1 },
+    question: '¿Qué pasa si las conexiones entre los lugares desaparecen?', beats: S1 },
   { id: 'cueva', number: 2, title: 'La cueva de Maia', minutes: [2, 3], place: 'La cueva de Maia, monte Cilene',
     question: '¿La astucia es admirable por sí misma o depende de cómo se utiliza?',
     sources: ['Himno homérico a Hermes (nacimiento, invención de la lira y episodio del ganado).'], beats: S2 },
