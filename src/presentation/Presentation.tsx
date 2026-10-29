@@ -1,4 +1,7 @@
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
+import { PerformanceMonitor } from '@react-three/drei'
+import { MathUtils } from 'three'
+import type { PerspectiveCamera } from 'three'
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import { SCENES } from '../data/scenes'
 import { Hud, plannedSeconds } from '../components/ui/Hud'
@@ -12,11 +15,56 @@ import { useKeyboard } from './useKeyboard'
 const COUNTS = SCENES.map((s) => s.beats.length)
 const reducer = (s: NavState, a: NavAction) => navigate(s, a, COUNTS)
 
+const BASE_FOV = 50          // campo de visión vertical pensado para 16:9
+const REF_ASPECT = 16 / 9
+const MAX_FOV = 85
+
+/** Mantiene el encuadre horizontal de un proyector 16:9 en pantallas más cuadradas (4:3, 16:10): amplía el campo vertical. */
+function ProjectorFit() {
+  const camera = useThree((s) => s.camera) as PerspectiveCamera
+  const size = useThree((s) => s.size)
+  useEffect(() => {
+    const aspect = size.width / Math.max(1, size.height)
+    if (aspect < REF_ASPECT) {
+      const half = Math.atan(Math.tan(MathUtils.degToRad(BASE_FOV) / 2) * (REF_ASPECT / aspect))
+      camera.fov = Math.min(MAX_FOV, MathUtils.radToDeg(half * 2))
+    } else {
+      camera.fov = BASE_FOV
+    }
+    camera.updateProjectionMatrix()
+  }, [camera, size.width, size.height])
+  return null
+}
+
+/** Oculta el cursor tras unos segundos sin moverlo (se ve mejor proyectado). */
+function useIdleCursor(ms = 2500) {
+  useEffect(() => {
+    let t: ReturnType<typeof setTimeout>
+    const root = document.documentElement
+    const show = () => {
+      root.style.cursor = ''
+      clearTimeout(t)
+      t = setTimeout(() => { root.style.cursor = 'none' }, ms)
+    }
+    show()
+    window.addEventListener('mousemove', show)
+    window.addEventListener('mousedown', show)
+    return () => {
+      clearTimeout(t)
+      root.style.cursor = ''
+      window.removeEventListener('mousemove', show)
+      window.removeEventListener('mousedown', show)
+    }
+  }, [ms])
+}
+
 export default function Presentation() {
   const [nav, dispatch] = useReducer(reducer, undefined, () => parseHash(location.hash, COUNTS) ?? { scene: 0, beat: 0 })
   const [hud, setHud] = useState(false)
   const [black, setBlack] = useState(false)
   const [elapsed, setElapsed] = useState(0)
+  const [dpr, setDpr] = useState(1.5)
+  useIdleCursor()
 
   // Estado -> hash (sin llenar el historial).
   useEffect(() => {
@@ -51,7 +99,10 @@ export default function Presentation() {
 
   return (
     <div className={`stage-root${SCENES[nav.scene].beats[nav.beat].flashback ? ' flashback' : ''}`} style={{ position: 'fixed', inset: 0 }}>
-      <Canvas dpr={[1, 1.5]} camera={{ fov: 50, near: 0.1, far: 600 }}>
+      <Canvas dpr={[1, dpr]} camera={{ fov: BASE_FOV, near: 0.1, far: 600 }}>
+        <ProjectorFit />
+        {/* Si el equipo va justo de fps, baja la resolución de render sola; si recupera, la sube. */}
+        <PerformanceMonitor flipflops={3} onDecline={() => setDpr(1)} onFallback={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
         <color attach="background" args={['#0b0b14']} />
         <fog attach="fog" args={['#0b0b14', 60, 260]} />
         <ambientLight intensity={0.8} />

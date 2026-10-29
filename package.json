@@ -9,7 +9,9 @@
     "lint": "oxlint",
     "typecheck": "tsc -b --noEmit",
     "test": "bun test",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "presentar": "tsc -b && vite build && vite preview --host 127.0.0.1 --port 4173 --strictPort",
+    "presentar:red": "tsc -b && vite build && vite preview --host 0.0.0.0 --port 4173 --strictPort"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
