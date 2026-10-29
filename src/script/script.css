@@ -55,3 +55,7 @@
   border: 1px solid var(--accent); background: var(--surface); color: var(--accent); font-size: 24px; cursor: pointer;
 }
 .sp a:focus-visible, .sp button:focus-visible, .sp input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.sp-panel { border: 1px dashed var(--line); border-radius: 6px; padding: 6px 10px; margin: 6px 0; font-size: 15px; line-height: 1.45; color: var(--muted); overflow-wrap: anywhere; }
+.sp-panel strong { display: block; text-transform: uppercase; font-size: 12px; letter-spacing: .06em; margin-bottom: 2px; }
+.sp-panel p { margin: 2px 0; }
+.sp-panel ul { margin: 2px 0; padding-left: 18px; }

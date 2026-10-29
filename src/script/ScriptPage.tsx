@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { SCENES } from '../data/scenes'
-import type { Speaker } from '../data/types'
+import type { Panel, Speaker } from '../data/types'
 import './script.css'
 
 const SPEAKER_NAMES: Record<Speaker, string> = {
@@ -58,6 +58,30 @@ function useWakeLock() {
   }, [on])
 
   return { supported, on, setOn }
+}
+
+function PanelNote({ panel }: { panel: Panel }) {
+  if (panel.kind === 'genealogia') {
+    return <div className="sp-panel"><strong>Panel</strong>Se muestra el árbol genealógico de Hermes.</div>
+  }
+  if (panel.kind === 'concepto') {
+    return (
+      <div className="sp-panel">
+        <strong>Panel: concepto</strong>
+        <p><b>{panel.term}</b> ({panel.greek})</p>
+        <p>{panel.gloss}</p>
+        <p><i>En el mito:</i> {panel.myth}</p>
+      </div>
+    )
+  }
+  return (
+    <div className="sp-panel">
+      <strong>Panel: referencias</strong>
+      <p><b>{panel.title}</b></p>
+      <ul>{panel.items.map((it, i) => <li key={i}>{it.replace(/\*/g, '')}</li>)}</ul>
+      {panel.note && <p><i>{panel.note}</i></p>}
+    </div>
+  )
 }
 
 export default function ScriptPage() {
@@ -135,6 +159,7 @@ export default function ScriptPage() {
                     <strong>En pantalla</strong>{Array.isArray(b.onScreen) ? b.onScreen.join(' · ') : b.onScreen}
                   </div>
                 )}
+                {b.panel && <PanelNote panel={b.panel} />}
                 {b.interaction && <div className="sp-pause" role="note">⏸ Pausa: {b.interaction}</div>}
               </div>
             ))}

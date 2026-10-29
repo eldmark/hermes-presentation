@@ -89,7 +89,7 @@ function DomPortal({ visible, children }: { visible: boolean; children: ReactNod
   return null
 }
 
-export default function S10Actividad({ data, beat, beatId, active }: SceneProps) {
+export default function S11Actividad({ data, beat, beatId, active }: SceneProps) {
   const b = data.beats[beat]
   const st = stageFor(beatId)
   const [quiz, setQuiz] = useState<QuizState>(() => loadQuizState())

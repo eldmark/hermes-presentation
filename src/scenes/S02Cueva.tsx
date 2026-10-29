@@ -11,6 +11,7 @@ import type { SceneProps, Shot } from '../presentation/types'
 
 export const shots: Shot[] = [
   { pos: [5, 3, 30], look: [1, 2, 10] },
+  { pos: [0.5, 1.9, 6], look: [-0.3, 1.2, -2] },
   { pos: [-4.5, 2, 3.5], look: [-2, 1, -3.2] },
   { pos: [-4, 2, 8], look: [1.2, 0.5, 1.8] },
   { pos: [2, 3, 33], look: [10, 1.2, 24] },
@@ -116,17 +117,17 @@ function Crib() {
 }
 
 export default function S02Cueva({ beat }: SceneProps) {
-  const memory = useDamp(beat === 1 ? 1 : 0, 0.5)
-  const lyre = useDamp(beat >= 2 ? 1 : 0)
-  const prints = useDamp(beat >= 2 ? 1 : 0, 1.2)
-  const beam = useDamp(beat >= 3 ? 1 : 0, 1)
-  const babyOn = beat === 1
+  const memory = useDamp(beat === 2 ? 1 : 0, 0.5)
+  const lyre = useDamp(beat >= 3 ? 1 : 0)
+  const prints = useDamp(beat >= 3 ? 1 : 0, 1.2)
+  const beam = useDamp(beat >= 4 ? 1 : 0, 1)
+  const babyOn = beat === 2
   const babyS = useDamp(babyOn ? 1 : 0, 0.5)
   const lightColor = useMemo(() => WARM.clone().lerp(MEMORY, memory), [memory])
   const wallColor = useMemo(() => new THREE.Color('#5a4636').lerp(new THREE.Color('#3a4a66'), memory), [memory])
 
-  const herPos: Vec3 = beat === 0 ? [1.5, 0, 16] : beat === 1 ? [-0.5, 0, -1.8] : beat === 2 ? [0.3, 0, 2.2] : [12.5, 0, 25]
-  const herRot = beat === 1 ? Math.atan2(CRIB[0] + 0.5, CRIB[2] + 1.8) : beat === 2 ? Math.atan2(3, 3) : 0.45
+  const herPos: Vec3 = beat === 0 ? [1.5, 0, 16] : beat === 1 ? [-3.4, 0, -1.2] : beat === 2 ? [-0.5, 0, -1.8] : beat === 3 ? [0.3, 0, 2.2] : [12.5, 0, 25]
+  const herRot = beat === 1 ? Math.atan2(CRIB[0] + 3.4, CRIB[2] + 1.2) : beat === 2 ? Math.atan2(CRIB[0] + 0.5, CRIB[2] + 1.8) : beat === 3 ? Math.atan2(3, 3) : 0.45
   const babyPos: Vec3 = [-3.3, 0.35, -3.5]
   const maiaRot = Math.atan2(CRIB[0] - MAIA[0], CRIB[2] - MAIA[2])
 
@@ -176,7 +177,7 @@ export default function S02Cueva({ beat }: SceneProps) {
         <Character kind="humano" position={babyPos} scale={0.35 * Math.max(0.001, babyS)} color="#f1e6d0" ghost={false} rotation={0.5} />
       </group>
 
-      <Hermes position={herPos} rotation={herRot} action={beat === 0 || beat === 3 ? 'walk' : 'idle'} />
+      <Hermes position={herPos} rotation={herRot} action={beat === 0 || beat === 4 ? 'walk' : 'idle'} />
 
       <Footprints path={PRINTS} count={8} visible={prints} />
       <GlowLine points={BEAM} progress={beam} color="#ffe9a8" width={4} />

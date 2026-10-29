@@ -1,4 +1,5 @@
 import type { Beat, Line, QuizQuestion, SceneData } from './types'
+import { asignarReparto } from './reparto'
 
 // El número de mesas NO está en los datos: se ingresa durante la presentación.
 export const QUIZ: { questions: QuizQuestion[]; reserve: QuizQuestion } = {
@@ -38,6 +39,9 @@ const S2: Beat[] = [
   { id: 'descenso', stage: 'Tras cruzar las puertas, la cámara no llega todavía a la sala de Zeus. Sigue a Hermes mientras desciende hacia una cueva en la montaña. Él entra con familiaridad; los narradores toman la palabra.',
     lines: [n("Antes de convertirse en el mensajero del Olimpo, Hermes fue hijo de Zeus y de Maia. Aquí, en la cueva de su madre, comenzó una historia que dice mucho sobre él.")],
     label: { place: 'La cueva de Maia, monte Cilene' } },
+  { id: 'familia', stage: 'Aparece el árbol genealógico sobre la escena: Zeus y Maia como padres de Hermes, y Apolo como su hermano por parte de padre. Hermes espera junto a la entrada.',
+    lines: [n("Hermes es hijo de Zeus, rey del Olimpo, y de Maia, una de las Pléyades e hija del titán Atlas. Apolo, el dios de la lira y de la luz, es su hermano por parte de padre.")],
+    panel: { kind: 'genealogia' } },
   { id: 'cuna', stage: 'La cámara se acerca a una cuna vacía. Hermes mira hacia ella. Un cambio de luz nos lleva al recuerdo: la cuna vuelve a estar ocupada y el pequeño Hermes sale de ella.',
     lines: [n("Según el *Himno homérico a Hermes*, no tardó en abandonar la cuna. Encontró una tortuga y fabricó con su caparazón una lira. Ese mismo día se llevó el ganado de su hermano Apolo.")],
     flashback: true },
@@ -246,7 +250,7 @@ function quizBeats(): Beat[] {
   })
 }
 
-const S10: Beat[] = [
+const S11: Beat[] = [
   { id: 'intro', stage: 'Hermes sostiene una carta con el sello de Zeus.',
     lines: [p('Hay cinco preguntas. Las cuatro opciones suenan parecido. Cuando la mano levantada empiece la cadena, las opciones desaparecen.')],
     onScreen: 'El mensaje que no debe cambiar', label: { place: 'Las puertas del Olimpo' } },
@@ -269,7 +273,74 @@ const S10: Beat[] = [
     ], onScreen: QUIZ.questions.map(q => q.options[q.correct]) },
 ]
 
-export const SCENES: SceneData[] = [
+const S10: Beat[] = [
+  { id: 'intro', stage: 'Hermes llega a un salón abierto con seis pedestales vacíos. Cada pedestal se iluminará con una idea.',
+    lines: [n("Hemos seguido a Hermes por sus mitos. Antes de la actividad, pongámosle nombre a lo que vimos: seis ideas de la filosofía griega que ayudan a leerlo.")],
+    onScreen: 'Seis ideas para pensar a Hermes', label: { place: 'El salón de las ideas' } },
+  { id: 'metis', stage: 'Se ilumina el primer pedestal. Aparece la tarjeta con la definición. Atrás se ven, tenues, las huellas del ganado.',
+    lines: [n("*Mêtis* es la inteligencia práctica de los griegos: ver la salida donde otros no la ven y actuar a tiempo. Hermes la usa al desviar las huellas del ganado y al fingir que duerme. Por eso, en el mito, la astucia no es buena ni mala por sí misma: depende de para qué se usa.")],
+    panel: { kind: 'concepto', term: 'Mêtis', greek: 'μῆτις', gloss: 'Inteligencia práctica y astuta: ver la salida donde otros no la ven y actuar a tiempo.',
+      myth: 'Hermes desvía las huellas del ganado y finge dormir en la cuna.' } },
+  { id: 'dike', stage: 'Se ilumina el segundo pedestal. La lira aparece sobre él.',
+    lines: [n("*Díkē* es la justicia entendida como reparación: que el daño se arregle y cada quien reciba lo que le corresponde. Hermes devuelve el ganado y le entrega la lira a Apolo. Ser hábil no basta; hay que reparar.")],
+    panel: { kind: 'concepto', term: 'Díkē', greek: 'δίκη', gloss: 'Justicia como reparación: que el daño se arregle y cada quien reciba lo que le corresponde.',
+      myth: 'Hermes devuelve el ganado y entrega la lira a Apolo; los hermanos hacen las paces.' } },
+  { id: 'libertad', stage: 'Se ilumina el tercer pedestal. Aparece una pequeña isla y una ruta que se aleja sobre el mar.',
+    lines: [n("*Eleuthería* es la libertad. Odiseo desea volver a casa y Calipso lo retiene, aunque lo cuida. Hermes no decide por ellos: hace posible que la decisión llegue. La libertad de uno también depende de que alguien la comunique.")],
+    panel: { kind: 'concepto', term: 'Eleuthería', greek: 'ἐλευθερία', gloss: 'Libertad: poder decidir sobre el propio camino, incluso cuando otro quiere retenerte.',
+      myth: 'Odiseo desea volver a Ítaca y Calipso lo retiene, hasta que llega el mensaje de Zeus.' } },
+  { id: 'destino', stage: 'Se ilumina el cuarto pedestal. Un rayo ilumina la sala un instante.',
+    lines: [n("*Moira* es el destino: la parte que le toca a cada quien. En la *Odisea*, Zeus dice que no es el destino de Odiseo morir lejos de los suyos, y manda a Hermes a comunicarlo. Hermes no cambia lo decidido; lo hace llegar.")],
+    panel: { kind: 'concepto', term: 'Moira', greek: 'μοῖρα', gloss: 'Destino: la parte que le toca a cada quien dentro del orden del mundo (kósmos), que Zeus sostiene.',
+      myth: 'Zeus declara que Odiseo no está destinado a morir lejos de los suyos y envía a Hermes a decirlo.' } },
+  { id: 'etica', stage: 'Se ilumina el quinto pedestal. Una carta sellada aparece sobre él.',
+    lines: [n("*Areté* es la virtud: hacer bien la función propia. Para un mensajero, eso es la fidelidad. Hermes no suaviza la orden para evitar el disgusto de Calipso, y por eso su mensaje sirve. La ética del mensajero es no cambiar lo que le confiaron.")],
+    panel: { kind: 'concepto', term: 'Areté', greek: 'ἀρετή', gloss: 'Virtud: hacer bien la función propia. En un mensajero, la fidelidad al mensaje.',
+      myth: 'Hermes entrega la orden sin alterarla, aunque Calipso proteste.' } },
+  { id: 'conocimiento', stage: 'Se ilumina el sexto pedestal. Aparece la planta moly.',
+    lines: [n("Y el *conocimiento*. Hermes sabe qué espera en casa de Circe y le da a Odiseo el *moly*. Saber del peligro le da una oportunidad, pero la decisión sigue siendo suya.")],
+    panel: { kind: 'concepto', term: 'Gnôsis', greek: 'γνῶσις', gloss: 'Conocimiento: saber qué viene permite actuar, pero no decide por nosotros.',
+      myth: 'Hermes da el moly a Odiseo y le explica qué esperar de Circe; Odiseo entra y decide por sí mismo.' } },
+  { id: 'cierre', stage: 'Los seis pedestales brillan a la vez. Hermes recoge su carta y mira hacia las puertas del Olimpo.',
+    lines: [n("Astucia, justicia, libertad, destino, virtud y conocimiento: seis maneras de preguntar lo mismo, qué hace un dios que no manda pero conecta. Ahora vamos a ponerlo a prueba.")],
+    onScreen: ['Astucia', 'Justicia', 'Libertad', 'Destino', 'Virtud', 'Conocimiento'] },
+]
+
+const S12: Beat[] = [
+  { id: 'gracias', stage: 'Hermes se despide frente a las puertas del Olimpo, ahora abiertas. La cámara se aleja y aparecen las referencias.',
+    lines: [p("Gracias por acompañarnos en este recorrido. Estas son las fuentes en las que nos apoyamos.")],
+    onScreen: 'Gracias', label: { place: 'Las puertas del Olimpo' } },
+  { id: 'ref-antiguas', stage: 'Lista de fuentes antiguas.', lines: [],
+    interaction: 'Sin texto: dejar la lista a la vista y abrir la ronda de preguntas.',
+    panel: { kind: 'referencias', title: 'Fuentes antiguas', items: [
+      'Hesíodo. (1914). *Teogonía* (H. G. Evelyn-White, Trad.). Loeb Classical Library. Theoi Classical Texts Library. https://www.theoi.com/Text/HesiodTheogony.html',
+      'Himno homérico a Hermes [Himno 4]. (1914). En H. G. Evelyn-White (Trad.), *Hesiod, the Homeric Hymns, and Homerica*. Loeb Classical Library. Mythopedia. https://mythopedia.com/library/homeric-hymns-evelyn-white-1914/4-to-hermes/',
+      'Homero. (1919). *Odisea*, cantos V, X y XXIV (A. T. Murray, Trad.). Loeb Classical Library. Theoi Classical Texts Library. https://www.theoi.com/Text/HomerOdyssey5.html · …/HomerOdyssey10.html · …/HomerOdyssey24.html',
+    ] } },
+  { id: 'ref-estudios', stage: 'Lista de estudios y obras de consulta.', lines: [],
+    panel: { kind: 'referencias', title: 'Estudios y obras de consulta', items: [
+      'Detienne, M., & Vernant, J.-P. (1978). *Cunning intelligence in Greek culture and society* (J. Lloyd, Trad.). Harvester Press. (Obra original publicada en 1974).',
+      'Friedlander, W. J. (1992). *The golden wand of medicine: A history of the caduceus symbol in medicine*. Greenwood Press.',
+      'Real Academia Española. (s. f.). Miércoles. En *Diccionario de la lengua española* (23.ª ed.). Recuperado el 29 de octubre de 2026, de https://dle.rae.es/miércoles',
+      'NASA. (s. f.). *Mercury*. NASA Science. Recuperado el 29 de octubre de 2026, de https://science.nasa.gov/mercury/',
+    ] } },
+  { id: 'ref-museos', stage: 'Lista de objetos de museo.', lines: [],
+    panel: { kind: 'referencias', title: 'Museos', items: [
+      'The Metropolitan Museum of Art. (s. f.). *Bronze herm* [Herma de bronce, griego arcadio, ca. 490 a. C.]. https://www.metmuseum.org/art/collection/search/255933',
+      'The Metropolitan Museum of Art. (s. f.). *Bronze herm* [Herma de bronce, romano, siglos I–II d. C.]. https://www.metmuseum.org/art/collection/search/250735',
+      'The Metropolitan Museum of Art. (s. f.). *Bronze statuette of Hermes seated on a rock* [Estatuilla de bronce de Hermes sentado sobre una roca, romano, siglos I–II d. C.]. https://www.metmuseum.org/art/collection/search/250955',
+      'British Museum. (s. f.). *Inscripción dedicada a Hermes Agoraios* [Objeto G_1864-0220-100]. https://www.britishmuseum.org/collection/object/G_1864-0220-100',
+      'British Museum. (s. f.). *Gods and goddesses of Roman Britain*. https://www.britishmuseum.org/learn/schools/ages-7-11/ancient-rome/gods-and-goddesses-roman-britain',
+    ] } },
+  { id: 'ref-imagenes', stage: 'Créditos de los modelos y de las referencias visuales.', lines: [],
+    panel: { kind: 'referencias', title: 'Imágenes y modelos', items: [
+      'Modelos 3D, escenas y animaciones: elaboración propia con Blender y three.js. Código en https://github.com/eldmark/hermes-presentation',
+      'Yliade. (s. f.). *Hermes* [Ilustración digital]. Usada solo como referencia visual para el diseño del personaje; no se reproduce.',
+      'Ilustración 3D de Zeus en un trono dorado [Imagen de un banco de imágenes, autoría no identificada]. Usada solo como referencia visual para el diseño del trono; no se reproduce.',
+    ], note: 'Las descripciones entre corchetes en español son traducciones nuestras de los títulos de los museos.' } },
+]
+
+const GUION: SceneData[] = [
   { id: 'puertas', number: 1, title: 'Las puertas del Olimpo', minutes: [0.75, 1], place: 'Las puertas del Olimpo',
     question: '¿Podría Hermes ser el dios más importante del mundo?', beats: S1 },
   { id: 'cueva', number: 2, title: 'La cueva de Maia', minutes: [2, 3], place: 'La cueva de Maia, monte Cilene',
@@ -295,8 +366,16 @@ export const SCENES: SceneData[] = [
     sources: ['The Metropolitan Museum of Art, Bronze herm (griego arcadio, ca. 490 a. C.; romano imperial) y Bronze statuette of Hermes seated on a rock.', 'British Museum: inscripción a Hermes Agoraios; Gods and goddesses of Roman Britain.'], beats: S8 },
   { id: 'hoy', number: 9, title: 'Lo que queda de Hermes', minutes: [2, 3], place: 'Nuestro mundo',
     question: '¿Podría Hermes ser el dios más importante del mundo?',
-    sources: ['Pendiente: citar una fuente (museo, enciclopedia o diccionario etimológico) para los datos de la sección 9.1. La sección 9.2 usa las fuentes de las escenas 4 a 8.'], beats: S9 },
-  { id: 'actividad', number: 10, title: 'El mensaje que no debe cambiar', minutes: [4, 6], place: 'Las puertas del Olimpo',
+    sources: ['Real Academia Española, Diccionario de la lengua española, «miércoles» (del lat. [dies] Mercuri, «día de Mercurio»); NASA Science, Mercury («named for the swiftest of the ancient Roman gods»); Friedlander, W. J. (1992), The golden wand of medicine, sobre el caduceo y la medicina. La sección 9.2 usa las fuentes de las escenas 4 a 8.'], beats: S9 },
+  { id: 'conceptos', number: 10, title: 'Seis ideas para pensar a Hermes', minutes: [2, 3], place: 'El salón de las ideas',
+    question: '¿Qué hace un dios que no manda, pero conecta?',
+    sources: ['Detienne, M., & Vernant, J.-P. (1978), Cunning intelligence in Greek culture and society, para mêtis. Las demás definiciones (díkē, eleuthería, moira, areté, gnôsis) son glosas breves de esta presentación, ligadas a Homero, Odisea V y X, y al Himno homérico a Hermes.'], beats: S10 },
+  { id: 'actividad', number: 11, title: 'El mensaje que no debe cambiar', minutes: [4, 6], place: 'Las puertas del Olimpo',
     question: '¿Qué se pierde si el mensaje cambia en el camino?',
-    sources: ['Adaptación del teléfono descompuesto con preguntas tipo Kahoot; las palabras parecidas son una decisión de diseño.'], beats: S10 },
+    sources: ['Adaptación del teléfono descompuesto con preguntas tipo Kahoot; las palabras parecidas son una decisión de diseño.'], beats: S11 },
+  { id: 'referencias', number: 12, title: 'Referencias', minutes: [0.5, 1], place: 'Las puertas del Olimpo',
+    sources: ['Lista completa en la propia escena (formato APA 7.ª edición, adaptado al español).'], beats: S12 },
 ]
+
+/** El guion con quién dice cada línea (ver reparto.ts). */
+export const SCENES: SceneData[] = asignarReparto(GUION)

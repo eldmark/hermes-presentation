@@ -2,13 +2,14 @@ import { describe, expect, test } from 'bun:test'
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { QUIZ, SCENES } from './scenes'
+import { palabrasPorPersona } from './reparto'
 
 const all = [...QUIZ.questions, QUIZ.reserve]
 
 describe('scenes', () => {
-  test('hay 10 escenas con ids únicos', () => {
-    expect(SCENES.length).toBe(10)
-    expect(new Set(SCENES.map(s => s.id)).size).toBe(10)
+  test('hay 12 escenas con ids únicos', () => {
+    expect(SCENES.length).toBe(12)
+    expect(new Set(SCENES.map(s => s.id)).size).toBe(12)
     SCENES.forEach((s, i) => expect(s.number).toBe(i + 1))
   })
   test('beat ids únicos y al menos un paso', () => {
@@ -24,8 +25,8 @@ describe('scenes', () => {
       expect([0, 1, 2, 3]).toContain(q.correct)
     }
   })
-  test('escena 10 tiene 3 pasos por pregunta', () => {
-    const s = SCENES[9]
+  test('la actividad (escena 11) tiene 3 pasos por pregunta', () => {
+    const s = SCENES.find(x => x.id === 'actividad')!
     for (let n = 1; n <= QUIZ.questions.length; n++) {
       expect(s.beats.filter(b => b.quiz?.q === n).length).toBe(3)
       for (const suf of ['pregunta', 'cadena', 'respuesta']) expect(s.beats.some(b => b.id === `q${n}-${suf}`)).toBe(true)
@@ -51,5 +52,16 @@ describe('scenes', () => {
       const src = readFileSync(join(import.meta.dir, f), 'utf8')
       expect(/from ['"](react|three)/.test(src)).toBe(false)
     }
+  })
+})
+
+describe('reparto', () => {
+  test('toda línea tiene una persona asignada', () => {
+    for (const s of SCENES) for (const b of s.beats) for (const l of b.lines) expect(l.presenter !== undefined && [1, 2, 3].includes(l.presenter)).toBe(true)
+  })
+  test('las tres personas dicen una cantidad parecida de palabras', () => {
+    const w = palabrasPorPersona(SCENES)
+    const total = w[1] + w[2] + w[3]
+    expect(Math.max(w[1], w[2], w[3]) - Math.min(w[1], w[2], w[3])).toBeLessThan(0.2 * (total / 3))
   })
 })

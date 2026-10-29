@@ -4,6 +4,9 @@ import type { Beat, SceneData } from '../data/types'
 import { Caption } from '../components/ui/Caption'
 import { PlaceLabel } from '../components/ui/PlaceLabel'
 import { WordReveal } from '../components/ui/WordReveal'
+import { ConceptPanel } from '../components/ui/ConceptPanel'
+import { GenealogyTree } from '../components/ui/GenealogyTree'
+import { ReferencesPanel } from '../components/ui/ReferencesPanel'
 
 export const WORD_INTERVAL_MS = 700
 
@@ -30,6 +33,14 @@ function useCount(total: number, resetKey: string): number {
   return state.key === resetKey ? state.n : 0
 }
 
+function PanelView({ panel }: { panel: NonNullable<Beat['panel']> }) {
+  switch (panel.kind) {
+    case 'genealogia': return <GenealogyTree />
+    case 'concepto': return <ConceptPanel term={panel.term} greek={panel.greek} gloss={panel.gloss} myth={panel.myth} />
+    case 'referencias': return <ReferencesPanel title={panel.title} items={panel.items} note={panel.note} />
+  }
+}
+
 export function Overlay({ scene, beat }: { scene: number; beat: number }) {
   const s = SCENES[scene]
   const b = s.beats[beat]
@@ -39,6 +50,11 @@ export function Overlay({ scene, beat }: { scene: number; beat: number }) {
   return (
     <div className="overlay" aria-live="polite">
       <PlaceLabel place={label?.place} time={label?.time} />
+      {b.panel && (
+        <div className={`ov-panel p-${b.panel.kind}`} key={`${scene}:${beat}`}>
+          <PanelView panel={b.panel} />
+        </div>
+      )}
       <div className="ov-center">
         {typeof b.onScreen === 'string' && <Caption text={b.onScreen} />}
         {Array.isArray(b.onScreen) && <WordReveal key={`${scene}:${beat}`} words={words} count={count} />}

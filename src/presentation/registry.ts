@@ -25,7 +25,9 @@ export const REGISTRY: Record<SceneId, Entry> = {
   almas: entry(6, () => import('../scenes/S07Almas')),
   caminos: entry(7, () => import('../scenes/S08Caminos')),
   hoy: entry(8, () => import('../scenes/S09Hoy')),
-  actividad: entry(9, () => import('../scenes/S10Actividad')),
+  conceptos: entry(9, () => import('../scenes/S10Conceptos')),
+  actividad: entry(10, () => import('../scenes/S11Actividad')),
+  referencias: entry(11, () => import('../scenes/S12Referencias')),
 }
 
 const shotsCache = new Map<SceneId, Shot[]>()

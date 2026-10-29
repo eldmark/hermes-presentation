@@ -1,0 +1,74 @@
+/* Tipografía de los paneles: la misma pareja que la chuleta de mitología. Archivos locales (sin CDN). */
+@font-face{font-family:Cinzel;font-weight:400;font-style:normal;font-display:swap;src:url('/fonts/cinzel-latin-400-normal.woff') format('woff')}
+@font-face{font-family:Cinzel;font-weight:700;font-style:normal;font-display:swap;src:url('/fonts/cinzel-latin-700-normal.woff') format('woff')}
+@font-face{font-family:'EB Garamond';font-weight:400;font-style:normal;font-display:swap;src:url('/fonts/eb-garamond-latin-400-normal.woff') format('woff')}
+@font-face{font-family:'EB Garamond';font-weight:500;font-style:normal;font-display:swap;src:url('/fonts/eb-garamond-latin-500-normal.woff') format('woff')}
+@font-face{font-family:'EB Garamond';font-weight:400;font-style:italic;font-display:swap;src:url('/fonts/eb-garamond-latin-400-italic.woff') format('woff')}
+
+/* Paletas de la chuleta de mitología (oscuro y dorado) */
+.gt, .pn-card, .pn-refs {
+  --bg:#141009; --panel:#1f1811; --gold:#c9a227; --gold-soft:#e6c765; --terracotta:#b5502a; --terracotta-soft:#e08a5c;
+  --indigo:#5a4f7a; --indigo-soft:#8b7fb8; --marble:#efe7d6; --muted:#a99a80; --line:#6b5b3a; --silver:#b9bac0;
+  font-family:Cinzel,'Trajan Pro',Georgia,'Times New Roman',serif; text-shadow:none;
+}
+
+/* ---- Árbol genealógico ---- */
+.gt{display:block;width:100%;height:100%;overflow:visible}
+.gt-c{stroke-width:3;fill:var(--panel)}
+.gt-primordial{stroke:var(--indigo-soft)} .gt-titan{stroke:var(--terracotta-soft)} .gt-olimpico{stroke:var(--gold-soft)}
+.gt-name{fill:var(--marble);font-weight:600;letter-spacing:.02em}
+.gt-sub{fill:var(--muted);font-size:21px;font-style:italic;font-family:'EB Garamond',Georgia,'Times New Roman',serif}
+.gt-link{fill:none;stroke:var(--line);stroke-opacity:.65;stroke-width:2}
+.gt-pair{stroke:var(--line);stroke-opacity:.65;stroke-width:2;stroke-dasharray:2 6;stroke-linecap:round}
+.gt-edge.hot .gt-link{stroke:var(--gold);stroke-opacity:.95;stroke-width:3.5}
+.gt-leg-t{fill:var(--muted);font-size:22px}
+.gt-legend .gt-c{stroke-width:2.5}
+.e-dim{opacity:.75}
+.e-high .gt-c{stroke-width:4.5;fill:#2b2114} .e-high .gt-name{fill:var(--gold-soft)}
+.e-focus .gt-c{stroke-width:6;fill:#33260f;stroke:var(--gold-soft)}
+.e-focus .gt-name{fill:var(--gold-soft);font-weight:700;letter-spacing:.08em}
+.gt-alias-t{fill:var(--silver);font-size:26px;font-style:italic;font-family:'EB Garamond',Georgia,'Times New Roman',serif}
+.gt-in{animation:gt-in .7s ease-out both}
+.gt-pulse{animation:gt-pulse 3.2s ease-in-out 1.5s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes gt-in{from{opacity:0}to{opacity:1}}
+@keyframes gt-pulse{0%,100%{opacity:.75}50%{opacity:1}}
+.e-dim.gt-in{animation-name:gt-in-dim}
+@keyframes gt-in-dim{from{opacity:0}to{opacity:.75}}
+
+/* ---- Tarjeta de concepto ---- */
+.pn-card{box-sizing:border-box;width:100%;padding:clamp(18px,2.2vw,40px) clamp(20px,2.6vw,48px);border:1.5px solid var(--gold);
+  border-radius:18px;background:rgba(20,16,9,.9);box-shadow:0 10px 40px rgba(0,0,0,.55),inset 0 0 0 1px rgba(201,162,39,.18);color:var(--marble);text-align:center}
+.pn-term{margin:0;font-size:clamp(34px,3.4vw,64px);line-height:1.1;font-weight:700;letter-spacing:.04em;color:var(--gold-soft)}
+.pn-greek{margin:.1em 0 0;font-size:clamp(48px,5.6vw,104px);line-height:1.15;color:var(--gold);font-family:'EB Garamond','Palatino Linotype',Palatino,'GFS Didot',Georgia,'Times New Roman',serif}
+.pn-rule{border:0;height:1px;margin:.5em auto .7em;width:40%;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.pn-gloss{margin:0;font-size:clamp(26px,2.1vw,42px);line-height:1.3;color:var(--marble);font-family:'EB Garamond',Georgia,'Times New Roman',serif}
+.pn-myth{margin:.8em 0 0;font-size:clamp(24px,1.8vw,36px);line-height:1.3;color:var(--muted);font-family:'EB Garamond',Georgia,'Times New Roman',serif}
+.pn-myth span{font-family:Cinzel,'Trajan Pro',Georgia,serif;font-size:.85em;letter-spacing:.06em;color:var(--terracotta-soft);font-style:normal}
+.pn-myth em{color:var(--marble)}
+
+/* ---- Referencias (APA, sangría francesa) ---- */
+.pn-refs{box-sizing:border-box;width:100%;max-height:100%;overflow:hidden;padding:clamp(14px,1.6vw,32px) clamp(20px,2.4vw,48px);
+  border:1.5px solid var(--gold);border-radius:18px;background:rgba(14,10,5,.9);color:var(--marble);
+  box-shadow:0 10px 40px rgba(0,0,0,.6);display:flex;flex-direction:column;justify-content:center}
+.pn-ref-l{--fs:clamp(22px,1.9vw,34px)} .pn-ref-m{--fs:clamp(18px,1.6vw,29px)} .pn-ref-s{--fs:clamp(17px,1.35vw,24px)}
+.pn-ref-title{margin:0 0 .5em;font-size:calc(var(--fs) * 1.45);color:var(--gold-soft);letter-spacing:.05em;font-weight:700;
+  border-bottom:1px solid var(--line);padding-bottom:.25em}
+.pn-ref-list{list-style:none;margin:0;padding:0;font-family:'EB Garamond',Georgia,'Times New Roman',serif;font-size:var(--fs);line-height:1.3}
+.pn-ref-list li{margin:0 0 .5em;padding-left:2em;text-indent:-2em;overflow-wrap:anywhere;text-align:left}
+.pn-ref-list em{color:var(--gold-soft)}
+.pn-ref-note{margin:.4em 0 0;font-size:calc(var(--fs) * .8);color:var(--muted);font-style:italic;font-family:'EB Garamond',Georgia,serif}
+
+/* ---- Posición en el overlay (contrato con las escenas 3D) ---- */
+.ov-panel{position:absolute;z-index:1;display:flex;align-items:center;justify-content:center;pointer-events:none;
+  animation:ov-panel-in .6s ease-out both}
+.ov-panel.p-genealogia{right:1.5vw;width:58vw;top:11vh;height:61vh;box-sizing:border-box;padding:.6vh .8vw;border-radius:18px;
+  background:rgba(14,10,5,.84);border:1px solid rgba(201,162,39,.45);box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.ov-panel.p-concepto{right:3vw;width:42vw;top:4vh;height:68vh}
+.ov-panel.p-referencias{left:7vw;width:86vw;top:10vh;height:62vh}
+.ov-panel.p-genealogia,.ov-panel.p-concepto{animation-name:ov-panel-slide}
+@keyframes ov-panel-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes ov-panel-slide{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .ov-panel,.gt-in,.gt-pulse{animation:none}
+  .e-dim.gt-in{animation:none}
+}

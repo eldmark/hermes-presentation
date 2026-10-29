@@ -1,4 +1,4 @@
-// Lógica pura de la escena 10 (sin React ni three).
+// Lógica pura de la escena 11 (actividad) (sin React ni three).
 import { addPoint, clampTables, resizeScores, tableFromKey } from '../../presentation/quizState'
 import type { QuizState } from '../../presentation/quizState'
 import type { Vec3 } from '../../data/types'
