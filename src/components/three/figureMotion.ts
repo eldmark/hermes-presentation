@@ -32,9 +32,12 @@ export const P = {
   shinLx: 15,
   shinRx: 16,
   capeRx: 17,
+  foreRy: 18,
 } as const
-export const POSE_SIZE = 18
+export const POSE_SIZE = 19
 
+/** Giro del antebrazo (eje de la extremidad) al saludar, para que la palma quede de frente. */
+export const WAVE_TWIST = 1.5
 export const WALK_SPEED = 8 // rad/s del ciclo de paso
 const HALF_PI = Math.PI / 2
 
@@ -78,6 +81,7 @@ export function computePose(out: ArrayLike<number> & { [i: number]: number }, ac
       out[P.armRx] = 0
       out[P.armRz] = -2.5
       out[P.foreRx] = 0
+      out[P.foreRy] = WAVE_TWIST // gira el antebrazo para que la palma mire al frente
       out[P.foreRz] = -0.25 + Math.sin(t * 7) * 0.45
       break
     case 'fly': {

@@ -45,10 +45,10 @@ def front_y(z):
     return -0.1
 
 
-def fuse(P, voxel, smooth=2):
+def fuse(P, voxel, smooth=2, post=None, ratio=.5):
     """Une todas las piezas de piel de la parte en una sola superficie orgánica (remallado por vóxeles + suavizado)."""
     skin = [o for o in P if o.data.materials and o.data.materials[0].name == SKIN.name]
-    if len(skin) < 2:
+    if len(skin) < (1 if post else 2):
         return
     P[:] = [o for o in P if all(o is not k for k in skin)]
     bpy.ops.object.select_all(action="DESELECT")
@@ -66,8 +66,51 @@ def fuse(P, voxel, smooth=2):
     md.factor = 0.55
     md.iterations = smooth
     bpy.ops.object.modifier_apply(modifier="sm")
+    if post:
+        post(o)
+    md = o.modifiers.new("dc", "DECIMATE")
+    md.ratio = ratio
+    bpy.ops.object.modifier_apply(modifier="dc")
     o.select_set(False)
     P.insert(0, o)
+
+
+def _ss(e0, e1, x):
+    t = max(0.0, min(1.0, (x - e0) / (e1 - e0)))
+    return t * t * (3 - 2 * t)
+
+
+def _bump(x, z, cx, cz, rx, rz):
+    """Montículo suave elíptico (0 en el borde, 1 en el centro)."""
+    d = math.sqrt(((x - cx) / rx) ** 2 + ((z - cz) / rz) ** 2)
+    return 1 - _ss(0.35, 1.0, d)
+
+
+def relief_torso(o):
+    """Textura muscular en el frente del torso: la silueta queda plana y el relieve solo se nota en luz y sombra."""
+    me = o.data
+    me.update()
+    for v in me.vertices:
+        x, y, z = v.co
+        n = Vector((x / .19 ** 2, y / .105 ** 2, 0)).normalized()      # normal elíptica lisa (la del remallado es ruidosa)
+        if n.y > -0.35 or not (1.04 < z < 1.50) or abs(x) > .20:
+            continue
+        sx = 1 if x >= 0 else -1
+        ax = abs(x)
+        h = 0.0
+        h += .0095 * _bump(ax, z, .088, 1.352, .088, .052)                      # pectoral
+        h -= .0042 * _bump(ax, z, .090, 1.282, .105, .014)                     # pliegue bajo el pectoral
+        h -= .0030 * _bump(ax, z, .0, 1.30, .011, .20) * _ss(1.06, 1.14, z)     # surco central
+        for zc, hh in ((1.236, .0042), (1.170, .0042), (1.104, .0040)):         # abdominales
+            h += hh * _bump(ax, z, .034, zc, .031, .030)
+        h += .0030 * _bump(ax, z, .140, 1.215, .030, .070)                      # serrato
+        v.co = v.co + n * h
+    me.update()
+    bpy.context.view_layer.objects.active = o
+    md = o.modifiers.new('sm2', 'SMOOTH')
+    md.factor = .5
+    md.iterations = 2
+    bpy.ops.object.modifier_apply(modifier='sm2')
 
 
 def skirt(P, mat_, z0, z1, rx0, ry0, rx1, ry1, t0=0.0, t1=1.0, folds=9, amp=.05, thick=.007, name="falda"):
@@ -130,12 +173,6 @@ def pelvis_b(P):
 def torso_b(P):
     pts = [V(0, 0, r[0]) for r in TORSO]
     loft(col, P, pts, [r[1:] for r in TORSO], SKIN, seg=28, sub=1, cap=(True, True), name="torso")
-    for sx in (-1, 1):
-        blob(col, P, (sx * .085, -.1065, 1.352), (.092, .031, .060), SKIN, rot=(0.10, 0, sx * 0.08))      # pectoral
-        blob(col, P, (sx * .170, -.018, 1.468), (.036, .046, .036), SKIN)                                 # trapecio-hombro
-        for i, z in enumerate((1.238, 1.170, 1.104)):                                                     # abdominales
-            blob(col, P, (sx * .034, -.1003 + i * .001, z), (.030, .0095, .022), SKIN, seg=14, rings=10)
-        blob(col, P, (sx * .132, -.060, 1.230), (.040, .034, .076), SKIN, rot=(0, 0, sx * 0.22))         # oblicuo / serrato
     # banda de cuero en diagonal (hombro derecho -> cadera izquierda)
     pts, rad = [], []
     for i in range(9):
@@ -146,7 +183,7 @@ def torso_b(P):
         rad.append((.0165, .0045))
     loft(col, P, pts, rad, LEATHER, seg=8, ref=(0, -1, 0), name="banda")
     prim(col, P, "sphere", (.150, front_y(1.505) - .008, 1.505), (.017, .007, .017), GOLD, seg=14, rings=8)  # hebilla
-    fuse(P, .0055, 3)
+    fuse(P, .0062, 3, post=relief_torso)
     # bolsa en la cadera izquierda
     bx, by, bz = -.232, .070, 1.0
     prim(col, P, "cube", (bx, by, bz), (.052, .100, .112), LEATHER, smooth=False)
@@ -199,7 +236,7 @@ def head_b(P):
     # cabello rizado
     cx, cy, cz = 0.0, .006, 1.712
     ax, ay, az = .097, .106, .104
-    fuse(P, .0042, 3)
+    fuse(P, .0050, 3)
     for i in range(130):
         th = random.uniform(0, 2 * math.pi)
         ph = math.acos(random.uniform(0.18, 0.94))   # 0 = coronilla
@@ -241,7 +278,7 @@ def arm_b(sx):
         tube(col, P, s, e, [(0, .050, .049), (.15, .056, .056), (.35, .054, .055), (.70, .046, .047), (1, .040, .041)], SKIN, sub=1, name="brazo")
         a, b = s.lerp(e, .50), s.lerp(e, .67)
         tube(col, P, a, b, [(0, .056, .056), (.5, .060, .060), (1, .056, .056)], GOLD, sub=1, name="brazalete")
-        fuse(P, .0065)
+        fuse(P, .0080)
     return f
 
 
@@ -308,7 +345,7 @@ def forearm_b(sx, side):
             hand_fist(P, sx)
         else:
             hand_open(P, sx)
-        fuse(P, .0042, 2)
+        fuse(P, .0055, 2)
         a, b = e.lerp(wr, .40), e.lerp(wr, .90)
         tube(col, P, a, b, [(0, .0475, .0495), (.5, .0390, .0405), (1, .0295, .0285)], LEATHER, sub=0, name="muñequera")
         for t in (.40, .62, .90):
@@ -328,7 +365,7 @@ def leg_b(sx):
     def f(P):
         tube(col, P, V(sx * .10, 0, .96), V(sx * .10, 0, .52),
              [(0, .090, .092), (.10, .098, .100), (.30, .095, .098), (.62, .078, .082), (.88, .060, .064), (1, .056, .060)], SKIN, sub=1, name="muslo")
-        fuse(P, .0065)
+        fuse(P, .0080)
     return f
 
 
@@ -344,7 +381,7 @@ def shin_b(sx):
         loft(col, P, [V(x, y, z) for y, z in yz], rr, SKIN, seg=18, ref=(0, 0, 1), sub=1, name="pie")
         for i, (off, sz) in enumerate(((.030, .0115), (.015, .0095), (0.0, .0085), (-.013, .0075), (-.025, .0065))):
             blob(col, P, (x - sx * off, -.1785 - i * .0008, .0125), (sz, sz * 1.25, sz * .95), SKIN, seg=10, rings=8)
-        fuse(P, .0045, 2)
+        fuse(P, .0055, 2)
         # sandalia
         loft(col, P, [V(x, y, .0065) for y in (.066, .010, -.060, -.120, -.192)], [(.034, .007), (.042, .007), (.048, .007), (.051, .007), (.044, .007)],
              LEATHER, seg=16, ref=(0, 0, 1), name="suela")
@@ -433,3 +470,7 @@ names = [o.name for o in col.objects if o.type == "MESH"]
 preview(names, {"frente": (0, -4.4, 1.0), "tres_cuartos": (-2.9, -3.3, 1.3), "lado": (4.2, 0.0, 1.0), "atras": (2.6, 3.5, 1.3)}, (0, 0, .95), "hermes", res=(700, 950))
 preview(names, {"cabeza": (-0.55, -1.15, 1.80), "cabeza_frente": (0, -1.1, 1.72)}, (0, 0, 1.70), "hermes_cabeza", res=(800, 800))
 preview(names, {"manos": (.95, -1.15, .95), "pies": (-.75, -1.0, .35)}, (.0, 0, .55), "hermes_det", res=(800, 800))
+
+for o in sorted([o for o in col.objects if o.type == "MESH"], key=lambda o: -len(o.data.vertices))[:8]:
+    print("VERTS", o.name, len(o.data.vertices))
+preview(names, {"torso": (0.0, -1.3, 1.30), "torso_3q": (-0.8, -1.1, 1.35)}, (0, 0, 1.28), "hermes_torso", res=(800, 800))

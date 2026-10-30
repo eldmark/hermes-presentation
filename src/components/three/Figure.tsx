@@ -19,13 +19,13 @@ class Boundary extends Component<{ fallback: ReactNode; children: ReactNode }, {
 }
 
 /** Nodo del glb y los índices de pose (eje X / eje Z) que lo mueven. */
-const BINDINGS: { name: string; x?: number; z?: number }[] = [
+const BINDINGS: { name: string; x?: number; y?: number; z?: number }[] = [
   { name: 'torso', x: P.torsoRx },
   { name: 'head', x: P.headRx },
   { name: 'arm_L', x: P.armLx, z: P.armLz },
   { name: 'forearm_L', x: P.foreLx, z: P.foreLz },
   { name: 'arm_R', x: P.armRx, z: P.armRz },
-  { name: 'forearm_R', x: P.foreRx, z: P.foreRz },
+  { name: 'forearm_R', x: P.foreRx, y: P.foreRy, z: P.foreRz },
   { name: 'leg_L', x: P.legLx },
   { name: 'shin_L', x: P.shinLx },
   { name: 'leg_R', x: P.legRx },
@@ -36,6 +36,7 @@ const BINDINGS: { name: string; x?: number; z?: number }[] = [
 interface Bound {
   obj: Object3D
   x: number
+  y: number
   z: number
   rx: number
   ry: number
@@ -93,7 +94,7 @@ function FigureLoaded({ file, action, movingRef, ghost, handItem, children }: Fi
     for (const b of BINDINGS) {
       const obj = byName.get(b.name)
       if (!obj) continue
-      bound.push({ obj, x: b.x ?? -1, z: b.z ?? -1, rx: obj.rotation.x, ry: obj.rotation.y, rz: obj.rotation.z })
+      bound.push({ obj, x: b.x ?? -1, y: b.y ?? -1, z: b.z ?? -1, rx: obj.rotation.x, ry: obj.rotation.y, rz: obj.rotation.z })
     }
     const root = byName.get('root') ?? scene
     return { bound, root, rootPos: root.position.clone(), rootRot: root.rotation.clone(), hand: byName.get('hand_R') ?? null }
@@ -115,7 +116,7 @@ function FigureLoaded({ file, action, movingRef, ghost, handItem, children }: Fi
       for (let i = 0; i < POSE_SIZE; i++) c[i] += (tg[i] - c[i]) * k
     }
     for (const b of rig.bound) {
-      b.obj.rotation.set(b.rx + (b.x >= 0 ? c[b.x] : 0), b.ry, b.rz + (b.z >= 0 ? c[b.z] : 0))
+      b.obj.rotation.set(b.rx + (b.x >= 0 ? c[b.x] : 0), b.ry + (b.y >= 0 ? c[b.y] : 0), b.rz + (b.z >= 0 ? c[b.z] : 0))
     }
     const r = rig.root
     r.position.set(rig.rootPos.x, rig.rootPos.y + c[P.rootY], rig.rootPos.z + c[P.rootZ])
