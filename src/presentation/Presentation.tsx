@@ -1,5 +1,7 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { PerformanceMonitor } from '@react-three/drei'
+import { PerformanceMonitor, useGLTF } from '@react-three/drei'
+import { ASSETS } from '../components/three/assets'
+import { asset } from '../lib/asset'
 import { Color, Fog, MathUtils } from 'three'
 import type { PerspectiveCamera } from 'three'
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
@@ -12,6 +14,10 @@ import { formatHash, navigate, parseHash } from './navigation'
 import type { NavAction, NavState } from './navigation'
 import { Overlay } from './Overlay'
 import { useKeyboard } from './useKeyboard'
+
+// Precarga todos los modelos al abrir la presentación, para que entrar a una escena no cause tirones.
+for (const f of Object.values(ASSETS)) if (f) useGLTF.preload(asset(`models/${f}`))
+
 
 const COUNTS = SCENES.map((s) => s.beats.length)
 const reducer = (s: NavState, a: NavAction) => navigate(s, a, COUNTS)
