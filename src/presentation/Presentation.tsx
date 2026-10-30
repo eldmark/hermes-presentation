@@ -99,6 +99,7 @@ export default function Presentation() {
   const [black, setBlack] = useState(false)
   const [elapsed, setElapsed] = useState(0)
   const [dpr, setDpr] = useState(1.5)
+  const [ready, setReady] = useState(false)
   useIdleCursor()
 
   // Estado -> hash (sin llenar el historial).
@@ -142,9 +143,14 @@ export default function Presentation() {
         {/* Luz de base suave: cada escena añade la suya. */}
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 20, 10]} intensity={0.85} />
-        <Stage scene={nav.scene} beat={nav.beat} />
+        <Stage scene={nav.scene} beat={nav.beat} onReady={() => setReady(true)} />
         <CameraRig scene={nav.scene} beat={nav.beat} />
       </Canvas>
+      {!ready && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9, background: '#0b0d12', color: '#e9e2cf', display: 'grid', placeItems: 'center', font: '600 36px Cinzel, serif', letterSpacing: '.08em' }}>
+          Preparando la presentación…
+        </div>
+      )}
       <Overlay scene={nav.scene} beat={nav.beat} />
       {hud && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 8, pointerEvents: 'none' }}>

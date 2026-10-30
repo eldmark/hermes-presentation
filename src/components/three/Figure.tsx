@@ -105,6 +105,8 @@ function FigureLoaded({ file, action, movingRef, ghost, handItem, children }: Fi
   const fresh = useRef(true)
 
   useFrame((state, dtRaw) => {
+    // Si la escena no se ve (oculta por Stage), no se calcula la pose.
+    for (let g: Object3D | null = rig.root; g; g = g.parent) if (!g.visible) return
     const dt = Math.min(dtRaw, 0.1)
     const c = cur.current, tg = target.current
     computePose(tg, action, state.clock.elapsedTime, movingRef.current, phase)

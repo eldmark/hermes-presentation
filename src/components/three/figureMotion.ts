@@ -37,7 +37,7 @@ export const P = {
 export const POSE_SIZE = 19
 
 /** Giro del antebrazo (eje de la extremidad) al saludar, para que la palma quede de frente. */
-export const WAVE_TWIST = 1.5
+export const WAVE_TWIST = -1.5
 export const WALK_SPEED = 8 // rad/s del ciclo de paso
 const HALF_PI = Math.PI / 2
 

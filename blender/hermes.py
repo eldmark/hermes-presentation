@@ -10,7 +10,7 @@ col = new_col("hermes")
 
 # ---------- materiales ----------
 SKIN = mat("h_piel", (0.56, 0.34, 0.22), 0.55)
-LIP = mat("h_labio", (0.46, 0.22, 0.18), 0.5)
+LIP = mat("h_labio", (0.50, 0.30, 0.22), 0.55)
 EYEW = mat("h_ojo", (0.96, 0.95, 0.92), 0.3)
 IRIS = mat("h_iris", (0.20, 0.34, 0.40), 0.3)
 PUPIL = mat("h_pupila", (0.03, 0.03, 0.04), 0.3)
@@ -45,9 +45,9 @@ def front_y(z):
     return -0.1
 
 
-def fuse(P, voxel, smooth=2, post=None, ratio=.5):
+def fuse(P, voxel, smooth=2, post=None, ratio=.5, which=None):
     """Une todas las piezas de piel de la parte en una sola superficie orgánica (remallado por vóxeles + suavizado)."""
-    skin = [o for o in P if o.data.materials and o.data.materials[0].name == SKIN.name]
+    skin = [o for o in P if o.data.materials and o.data.materials[0].name == (which or SKIN).name]
     if len(skin) < (1 if post else 2):
         return
     P[:] = [o for o in P if all(o is not k for k in skin)]
@@ -222,17 +222,18 @@ def head_b(P):
         blob(col, P, (sx * .0375, -.0945, 1.7005), (.0150, .0100, .0052), SKIN, seg=16, rings=10)        # párpado inferior
         # cejas
         path_tube(col, P, [V(sx * .012, -.101, 1.7345), V(sx * .035, -.1045, 1.7395), V(sx * .060, -.0995, 1.7350), V(sx * .074, -.0905, 1.7270)],
-                  .0050, .0030, BROW, seg=8, ref=(0, 0, 1), name="ceja")
+                  .0036, .0022, BROW, seg=8, ref=(0, 0, 1), name="ceja")
         # orejas
         blob(col, P, (sx * .0935, .012, 1.690), (.0105, .0195, .0310), SKIN, rot=(0, 0, sx * 0.15), seg=16, rings=12)
         # pómulos
-        blob(col, P, (sx * .054, -.073, 1.682), (.020, .0075, .015), SKIN, seg=14, rings=10)
+        blob(col, P, (sx * .056, -.071, 1.680), (.018, .005, .013), SKIN, seg=14, rings=10)
+        blob(col, P, (sx * .036, -.0925, 1.7285), (.030, .0105, .0075), SKIN, seg=16, rings=10)      # arco superciliar
     # boca y mentón
     path_tube(col, P, [V(-.026, -.0955, 1.6395), V(-.012, -.1035, 1.6425), V(0, -.1055, 1.6405), V(.012, -.1035, 1.6425), V(.026, -.0955, 1.6395)],
-              .0050, .0050, LIP, seg=10, ref=(0, 0, 1), name="labio_sup")
+              .0034, .0034, LIP, seg=10, ref=(0, 0, 1), name="labio_sup")
     path_tube(col, P, [V(-.022, -.0965, 1.6305), V(-.010, -.1040, 1.6275), V(.010, -.1040, 1.6275), V(.022, -.0965, 1.6305)],
-              .0058, .0058, LIP, seg=10, ref=(0, 0, 1), name="labio_inf")
-    blob(col, P, (0, -.0985, 1.6115), (.0205, .0140, .0160), SKIN, seg=14, rings=10)
+              .0040, .0040, LIP, seg=10, ref=(0, 0, 1), name="labio_inf")
+    blob(col, P, (0, -.0905, 1.6075), (.0185, .0080, .0105), SKIN, seg=14, rings=10)
     # cabello rizado
     cx, cy, cz = 0.0, .006, 1.712
     ax, ay, az = .097, .106, .104
@@ -243,7 +244,7 @@ def head_b(P):
         x = cx + ax * math.sin(ph) * math.cos(th)
         y = cy + ay * math.sin(ph) * math.sin(th)
         z = cz + az * math.cos(ph)
-        if y < -.03 and z < 1.745:      # despeja la frente y la cara
+        if y < -.03 and z < 1.80:       # despeja la frente y la cara
             continue
         if z < 1.62 or z > 1.752:       # el petaso cubre la parte alta
             continue
@@ -253,6 +254,7 @@ def head_b(P):
         prim(col, P, "ico", (sx * .088, -.012, 1.690), (.012, .020, .030), HAIR, sub=1)
         for dz, dy in ((.0, -.02), (.03, .0), (.055, -.015)):
             prim(col, P, "ico", (sx * .098, dy, 1.700 + dz), (.016, .020, .018), HAIR, sub=1)
+    fuse(P, .0055, 3, ratio=.55, which=HAIR)
     # petaso: casquete ajustado con reborde fino y alas grandes que barren hacia atrás
     loft(col, P, [V(0, .004, z) for z in (1.742, 1.772, 1.815, 1.862, 1.898, 1.916)],
          [(.101, .109), (.105, .113), (.100, .108), (.082, .090), (.050, .056), (.016, .018)], HAT, seg=40, sub=1, name="copa")
