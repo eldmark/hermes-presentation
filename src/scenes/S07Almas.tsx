@@ -169,9 +169,8 @@ function Palace({ dim, dissolve }: { dim: number; dissolve: number }) {
   const roof = mixc('#b5614a', '#6a4656', dim)
   const wall = mixc('#e6dcc6', '#62637a', dim)
   const colsX = [-6, -3.6, -1.2, 1.2, 3.6, 6]
-  if (dissolve > 0.98) return null
   return (
-    <group position={[0, -dissolve * 12, -8]}>
+    <group visible={!(dissolve > 0.98)} position={[0, -dissolve * 12, -8]}>
       {/* escalinata y plataforma */}
       <mesh position={[0, 0.1, 0.9]}><boxGeometry args={[18, 0.2, 11.6]} /><Mat color={stoneDk} /></mesh>
       <mesh position={[0, 0.3, 0.4]}><boxGeometry args={[17, 0.2, 10.4]} /><Mat color={stone} /></mesh>
@@ -218,9 +217,8 @@ function Beach({ o }: { o: number }) {
     ry: rnd(i, 6) * 3,
     c: ['#b8aa86', '#9c9078', '#cbbd96'][i % 3],
   })), [])
-  if (o < 0.02) return null
   return (
-    <group>
+    <group visible={!(o < 0.02)}>
       <mesh position={[-14, 0.0, 2.2]}><boxGeometry args={[52, 0.16, 3.4]} /><Mat color="#cdbb8a" o={o} /></mesh>
       {/* espuma en la orilla */}
       <mesh position={[-14, 0.045, 4.05]} rotation={[-Math.PI / 2, 0, 0]}><planeGeometry args={[52, 0.5]} /><meshBasicMaterial color="#e8f1ff" transparent opacity={0.4 * o} depthWrite={false} /></mesh>
@@ -231,9 +229,8 @@ function Beach({ o }: { o: number }) {
 }
 
 function Raft({ o }: { o: number }) {
-  if (o < 0.02) return null
   return (
-    <group position={[-5, 0.2, 8]} rotation={[0, 0.3, 0]}>
+    <group visible={!(o < 0.02)} position={[-5, 0.2, 8]} rotation={[0, 0.3, 0]}>
       {[-0.6, -0.3, 0, 0.3, 0.6].map((z) => (
         <mesh key={z} position={[0, 0, z]} rotation={[0, 0, Math.PI / 2]}>
           <cylinderGeometry args={[0.14, 0.14, 2.2, 6]} /><Mat color="#8a5f3a" o={o} />
@@ -266,9 +263,8 @@ function RoadStones({ o }: { o: number }) {
     }
     return out
   }, [])
-  if (o < 0.02) return null
   return (
-    <group>
+    <group visible={!(o < 0.02)}>
       <mesh position={[22, 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 7]} />
         <meshStandardMaterial color="#1c1f2a" transparent opacity={o} depthWrite={false} />
@@ -294,9 +290,8 @@ function Mist({ s }: { s: number }) {
     sz: 9 + rnd(i, 4) * 8,
     ry: rnd(i, 5) * 3,
   })), [])
-  if (s < 0.02) return null
   return (
-    <group>
+    <group visible={!(s < 0.02)}>
       {patches.map((m, i) => (
         <mesh key={i} position={m.p} rotation={[-Math.PI / 2, 0, m.ry]}>
           <planeGeometry args={[m.sz, m.sz * 0.55]} />
@@ -311,12 +306,12 @@ function Asfodelos({ s }: { s: number }) {
   const { stems, flowers, leaves, tufts } = useMemo(() => {
     const stems: Item[] = [], flowers: Item[] = [], leaves: Item[] = [], tufts: Item[] = []
     const fc = ['#f1eee0', '#e8e6d6', '#faf6ea']
-    for (let i = 0; i < 52; i++) {
+    for (let i = 0; i < 40; i++) {
       const x = 40.5 + rnd(i, 1) * 19, z = (rnd(i, 2) - 0.5) * 13
       const h = 1.1 + rnd(i, 3) * 0.9
       stems.push({ p: [x, h / 2, z], s: [1, h, 1], c: '#7f8c74' })
-      for (let k = 0; k < 7; k++) {
-        const t = k / 6
+      for (let k = 0; k < 5; k++) {
+        const t = k / 4
         const ang = k * 2.4 + i
         flowers.push({
           p: [x + Math.cos(ang) * 0.09 * (1 - t * 0.6), h * (0.62 + 0.38 * t), z + Math.sin(ang) * 0.09 * (1 - t * 0.6)],
@@ -330,7 +325,7 @@ function Asfodelos({ s }: { s: number }) {
       }
     }
     const tc = ['#6b7a66', '#5d6c5c', '#7a8872', '#657361']
-    for (let i = 0; i < 260; i++) {
+    for (let i = 0; i < 170; i++) {
       tufts.push({
         p: [39 + rnd(i, 11) * 25, 0.2, (rnd(i, 12) - 0.5) * 15],
         r: [(rnd(i, 13) - 0.5) * 0.4, 0, (rnd(i, 14) - 0.5) * 0.4],
@@ -340,9 +335,8 @@ function Asfodelos({ s }: { s: number }) {
     }
     return { stems, flowers, leaves, tufts }
   }, [])
-  if (s < 0.01) return null
   return (
-    <group scale={[1, s, 1]}>
+    <group visible={!(s < 0.01)} scale={[1, s, 1]}>
       <mesh position={[51, -0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[34, 24]} />
         <meshStandardMaterial color="#4c5649" alphaMap={soft().gray} transparent depthWrite={false} />
@@ -350,7 +344,7 @@ function Asfodelos({ s }: { s: number }) {
       <Inst items={tufts}><coneGeometry args={[0.09, 0.4, 4]} /><meshStandardMaterial color="#ffffff" flatShading /></Inst>
       <Inst items={leaves}><coneGeometry args={[0.05, 0.6, 3]} /><meshStandardMaterial color="#ffffff" flatShading /></Inst>
       <Inst items={stems}><cylinderGeometry args={[0.012, 0.022, 1, 4]} /><meshStandardMaterial color="#ffffff" flatShading /></Inst>
-      <Inst items={flowers}><sphereGeometry args={[0.07, 6, 5]} /><meshStandardMaterial color="#ffffff" emissive="#d8d6c6" emissiveIntensity={0.35} flatShading /></Inst>
+      <Inst items={flowers}><sphereGeometry args={[0.08, 5, 3]} /><meshStandardMaterial color="#ffffff" emissive="#d8d6c6" emissiveIntensity={0.35} flatShading /></Inst>
     </group>
   )
 }
@@ -361,9 +355,8 @@ function Landmarks({ s }: { s: number }) {
     sz: 1.3 + rnd(i, 4) * 1.6,
     c: ['#8a7ac8', '#6c5b9a', '#a58ad0'][i % 3]!,
   })), [])
-  if (s < 0.01) return null
   return (
-    <group scale={[1, s, 1]}>
+    <group visible={!(s < 0.01)} scale={[1, s, 1]}>
       {/* Océano: río facetado con orillas y puente de losa */}
       <group position={[10, 0.0, 0]}>
         <group position={[0, 0.02, 0]}><Wavy w={4.4} h={22} seg={22} amp={0.1} color="#2f6ea6" emissive="#14355a" phase={1.3} /></group>
@@ -414,9 +407,8 @@ function Landmarks({ s }: { s: number }) {
 }
 
 function LivingGlimpse({ s }: { s: number }) {
-  if (s < 0.01) return null
   return (
-    <group position={[29, 0, -11]} scale={[1.8, 1.8 * s, 1.8]}>
+    <group visible={!(s < 0.01)} position={[29, 0, -11]} scale={[1.8, 1.8 * s, 1.8]}>
       <mesh position={[0, 0.1, 0]}><boxGeometry args={[3, 0.2, 2.4]} /><meshStandardMaterial color="#8a7a66" flatShading /></mesh>
       <mesh position={[0, 1.0, 0]}><boxGeometry args={[2.4, 1.6, 1.8]} /><meshStandardMaterial color="#e2c79a" flatShading /></mesh>
       <mesh position={[0, 1.9, 0]}><boxGeometry args={[2.6, 0.12, 2.0]} /><meshStandardMaterial color="#8a5a44" flatShading /></mesh>

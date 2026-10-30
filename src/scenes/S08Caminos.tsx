@@ -104,9 +104,8 @@ function Stall({ position, color, goods }: { position: Vec3; color: string; good
 }
 
 function Arch({ position, k, color }: { position: Vec3; k: number; color: string }) {
-  if (k < 0.02) return null
   return (
-    <group position={position} scale={[1, k, 1]}>
+    <group visible={!(k < 0.02)} position={position} scale={[1, k, 1]}>
       <mesh position={[0, 1.5, 0]}>
         <torusGeometry args={[0.7, 0.14, 5, 12, Math.PI]} />
         <meshStandardMaterial color={color} flatShading />
@@ -131,9 +130,8 @@ function Money({ position }: { position: Vec3 }) {
 }
 
 function Mercury({ position, scale }: { position: Vec3; scale: number }) {
-  if (scale < 0.02) return null
   return (
-    <group position={position} scale={scale}>
+    <group visible={!(scale < 0.02)} position={position} scale={scale}>
       <mesh position={[0, 0.2, 0]}>
         <boxGeometry args={[0.7, 0.4, 0.7]} />
         <meshStandardMaterial color="#e8e4da" flatShading />
@@ -171,9 +169,8 @@ function Mercury({ position, scale }: { position: Vec3; scale: number }) {
 }
 
 function Island({ position, k }: { position: Vec3; k: number }) {
-  if (k < 0.02) return null
   return (
-    <group position={position} scale={k}>
+    <group visible={!(k < 0.02)} position={position} scale={k}>
       <mesh position={[0, 0.2, 0]}>
         <cylinderGeometry args={[2.6, 3.2, 0.6, 8]} />
         <meshStandardMaterial color="#d8c48a" flatShading />
@@ -188,9 +185,8 @@ function Island({ position, k }: { position: Vec3; k: number }) {
 }
 
 function Underworld({ position, k }: { position: Vec3; k: number }) {
-  if (k < 0.02) return null
   return (
-    <group position={position} scale={k}>
+    <group visible={!(k < 0.02)} position={position} scale={k}>
       <mesh position={[0, 0.4, 0]}>
         <coneGeometry args={[2.8, 2.8, 6]} />
         <meshStandardMaterial color="#2a2438" flatShading />

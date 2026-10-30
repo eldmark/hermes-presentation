@@ -119,9 +119,8 @@ function Telar({ weaving }: { weaving: boolean }) {
 }
 
 function Imagen({ x, color, s }: { x: number; color: string; s: number }) {
-  if (s < 0.02) return null
   return (
-    <group position={[x * 2, 11, 10]} scale={s * 1.8}>
+    <group visible={!(s < 0.02)} position={[x * 2, 11, 10]} scale={s * 1.8}>
       <mesh position={[0, 0.9, 0]}>
         <capsuleGeometry args={[0.45, 1.1, 4, 8]} />
         <meshBasicMaterial color={color} transparent opacity={0.45} depthWrite={false} blending={THREE.AdditiveBlending} />
