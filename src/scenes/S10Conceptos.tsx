@@ -114,8 +114,7 @@ const PRINTS: Vec3[] = [[-0.5, 0.0, 0.35], [0, 0.0, -0.35], [0.5, 0.0, 0.35]]
 
 /** Trazo sólido (no aditivo) para que se lea sobre el fondo claro. */
 function SolidRoute({ points, lit, color, width = 4 }: { points: Vec3[]; lit: number; color: string; width?: number }) {
-  if (lit < 0.05) return null
-  return <Line points={points} color={color} lineWidth={width} transparent opacity={Math.min(1, lit)} />
+  return <Line visible={lit >= 0.05} points={points} color={color} lineWidth={width} transparent opacity={Math.min(1, lit)} />
 }
 
 function Island() {

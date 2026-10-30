@@ -40,14 +40,11 @@ function loadSwapped(): number | null {
 function Orb({ mode, progress, deform }: { mode: 'none' | 'follow' | 'loop'; progress: number; deform: boolean }) {
   const ref = useRef<THREE.Group>(null)
   const [shape, setShape] = useState(0)
-  const [pos, setPos] = useState(0)
   useFrame(({ clock }) => {
     if (mode === 'none') return
     const p = mode === 'loop' ? (clock.elapsedTime * 0.18) % 1 : progress
     const s = deform ? Math.min(2, Math.floor(p * 3)) : 0
     if (s !== shape) setShape(s)
-    const q = Math.round(p * 1000) / 1000
-    if (q !== pos) setPos(q)
     const g = ref.current
     if (g) {
       const v = pointAt(PATH, p)
@@ -55,10 +52,9 @@ function Orb({ mode, progress, deform }: { mode: 'none' | 'follow' | 'loop'; pro
       g.rotation.y = clock.elapsedTime * 2
     }
   })
-  if (mode === 'none') return null
   const color = deform ? MSG_COLORS[shape] : MSG_COLORS[0]
   return (
-    <group ref={ref}>
+    <group ref={ref} visible={mode !== 'none'}>
       <mesh>
         {shape === 0 ? <sphereGeometry args={[0.2, 14, 14]} /> : shape === 1 ? <octahedronGeometry args={[0.26]} /> : <boxGeometry args={[0.36, 0.36, 0.36]} />}
         <meshBasicMaterial color={color} transparent opacity={0.95} depthWrite={false} blending={THREE.AdditiveBlending} />
