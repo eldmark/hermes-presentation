@@ -1,0 +1,1 @@
+import{a as e,c as t}from"./index-CJE9B6JW.js";import{d as n,s as r}from"./Presentation-gvg49gOH.js";var i=t(e(),1);function a(e,t=.6){let[a,o]=(0,i.useState)(e),s=(0,i.useRef)({v:e});return n((n,i)=>{s.current.v!==e&&(r(s.current,`v`,e,t,Math.min(i,.1)),Math.abs(s.current.v-e)<.001&&(s.current.v=e),o(s.current.v))}),a}export{a as t};
